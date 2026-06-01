@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudAudit — Free Cloud Cost Audit Tool India | Reduce AWS Azure GCP Bills</title>
+
+<meta name="description" content="CloudAudit helps Indian startups and SMBs reduce AWS, Azure and GCP bills by up to 40%. Free cloud cost audit tool. Get AI-powered savings recommendations instantly.">
+<meta name="keywords" content="cloud cost audit India, reduce AWS bill, Azure cost optimiser, GCP savings, cloud audit tool, cloud cost India">
+<meta name="author" content="CloudAudit">
+<meta property="og:title" content="CloudAudit — Free Cloud Cost Audit Tool India">
+<meta property="og:description" content="Reduce your AWS, Azure or GCP bill by up to 40% with AI-powered recommendations. Free audit. No credit card needed.">
+<meta name="robots" content="index, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --brand:#185FA5;--brand-bg:#E6F1FB;
+  --ok:#3B6D11;--ok-bg:#EAF3DE;
+  --danger:#A32D2D;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'Sora',sans-serif;
+  --text:#1a1a1a;--text2:#666;--text3:#999;
+  --bg:#fff;--bg2:#f7f7f5;--bg3:#f0efe9;
+  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
+  --radius:8px;--radius-lg:12px;
+}
+body{font-family:var(--sans);color:var(--text);background:var(--bg3);min-height:100vh;}
+.root{max-width:720px;margin:0 auto;background:var(--bg);min-height:100vh;box-shadow:0 0 0 0.5px var(--border);}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:0.5px solid var(--border);}
+.logo{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--brand);}
+.logo span{color:var(--text2);font-weight:400;}
+.plan-badge{background:var(--brand-bg);color:#0C447C;font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:100px;font-weight:500;}
+
+/* PAGES */
+.page{display:none;} .page.active{display:block;}
+
+/* BUTTONS */
+.btn-brand{background:var(--brand);color:#fff;border:none;padding:12px 28px;font-family:var(--sans);font-size:13px;font-weight:500;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
+.btn-brand:hover{background:#0C447C;}
+.btn-out{background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:12px 22px;font-family:var(--sans);font-size:13px;border-radius:var(--radius);cursor:pointer;margin-left:8px;}
+.btn-out:hover{background:var(--bg2);}
+
+/* LANDING */
+.landing{padding:2rem 1.5rem;}
+.landing-hero{text-align:center;padding:2.5rem 0 2rem;}
+.landing-tag{font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:.06em;margin-bottom:16px;}
+.landing-h1{font-size:34px;font-weight:600;line-height:1.15;letter-spacing:-0.8px;margin-bottom:14px;}
+.landing-h1 .hl{color:var(--brand);}
+.landing-sub{font-size:14px;color:var(--text2);line-height:1.7;max-width:460px;margin:0 auto 28px;}
+
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:2rem;}
+.feat-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.2rem;}
+.feat-icon{font-size:22px;color:var(--brand);margin-bottom:10px;}
+.feat-title{font-size:13px;font-weight:500;margin-bottom:5px;}
+.feat-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+
+.pricing-section{margin-top:2.5rem;}
+.section-label{font-size:11px;font-family:var(--mono);color:var(--text2);letter-spacing:.06em;text-align:center;margin-bottom:16px;}
+.pricing-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.price-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+.price-card.featured{border:2px solid var(--brand);}
+.price-name{font-size:12px;font-family:var(--mono);color:var(--text2);margin-bottom:6px;}
+.price-amt{font-size:28px;font-weight:600;letter-spacing:-1px;margin-bottom:2px;}
+.price-per{font-size:11px;color:var(--text2);}
+.price-badge{display:inline-block;background:var(--brand-bg);color:#0C447C;font-size:10px;padding:2px 8px;border-radius:100px;margin:8px 0;font-family:var(--mono);}
+.price-features{margin-top:12px;display:flex;flex-direction:column;gap:7px;}
+.pf{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;}
+.pf i{font-size:14px;color:var(--ok);}
+.pf.no i{color:var(--text3);}
+.price-btn{width:100%;margin-top:16px;padding:11px;font-family:var(--sans);font-size:13px;border-radius:var(--radius);cursor:pointer;font-weight:500;transition:opacity .15s;}
+.price-btn.primary{background:var(--brand);color:#fff;border:none;}
+.price-btn.secondary{background:transparent;border:0.5px solid var(--border2);color:var(--text);}
+.price-btn:hover{opacity:.85;}
+.upi-notice{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:var(--radius);padding:12px 16px;margin-top:14px;font-size:12px;color:#085041;display:flex;align-items:center;gap:8px;}
+
+/* ONBOARD */
+.onboard{padding:2rem 1.5rem;}
+.ob-label{font-size:11px;font-family:var(--mono);color:var(--text2);margin-bottom:8px;letter-spacing:.04em;}
+.ob-title{font-size:20px;font-weight:500;margin-bottom:6px;}
+.ob-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-size:12px;color:var(--text2);}
+.form-group select{padding:9px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-family:var(--sans);font-size:13px;background:var(--bg);color:var(--text);}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.slider-row label{font-size:12px;color:var(--text2);min-width:120px;}
+.slider-row input[type=range]{flex:1;}
+.slider-val{font-family:var(--mono);font-size:13px;font-weight:500;min-width:80px;text-align:right;}
+.service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;}
+.svc-chip{border:0.5px solid var(--border2);border-radius:var(--radius);padding:9px 8px;font-size:12px;cursor:pointer;text-align:center;transition:all .15s;background:var(--bg);}
+.svc-chip.sel{background:var(--brand-bg);border-color:var(--brand);color:#0C447C;font-weight:500;}
+.svc-chip i{display:block;font-size:20px;margin-bottom:5px;}
+
+/* DASHBOARD */
+.dash{padding:1.5rem;}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.dash-title{font-size:17px;font-weight:500;}
+.dash-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.back-btn{font-size:12px;padding:7px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;cursor:pointer;font-family:var(--sans);color:var(--text);}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.kpi{background:var(--bg2);border-radius:var(--radius);padding:1rem;}
+.kpi-label{font-size:11px;color:var(--text2);margin-bottom:5px;}
+.kpi-val{font-size:22px;font-weight:500;font-family:var(--mono);}
+.kpi-val.green{color:#3B6D11;} .kpi-val.amber{color:#854F0B;}
+.kpi-delta{font-size:11px;margin-top:3px;}
+.kpi-delta.up{color:var(--ok);} .kpi-delta.dn{color:var(--danger);}
+.stitle{font-size:11px;font-family:var(--mono);color:var(--text2);letter-spacing:.06em;margin-bottom:12px;}
+.chart-wrap{position:relative;width:100%;height:200px;margin-bottom:18px;}
+.recs-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.rec-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.2rem;display:flex;align-items:flex-start;gap:12px;}
+.rec-sev{width:5px;border-radius:3px;flex-shrink:0;align-self:stretch;}
+.sev-high{background:#E24B4A;} .sev-med{background:#EF9F27;}
+.rec-body{flex:1;}
+.rec-title{font-size:13px;font-weight:500;margin-bottom:4px;}
+.rec-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+.rec-saving{font-family:var(--mono);font-size:12px;color:var(--ok);font-weight:500;margin-top:6px;}
+.rec-tag{display:inline-block;background:var(--bg2);border:0.5px solid var(--border);border-radius:4px;font-size:10px;font-family:var(--mono);padding:2px 7px;margin-right:4px;color:var(--text2);}
+.lock-wall{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:2rem;text-align:center;}
+.ai-section{border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.1rem 1.2rem;margin-bottom:18px;}
+.ai-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.ai-label{font-size:11px;font-family:var(--mono);color:var(--brand);font-weight:500;}
+.ai-text{font-size:13px;color:var(--text2);line-height:1.7;}
+.nav-tabs{display:flex;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;}
+.ntab{padding:9px 16px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);}
+.ntab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:500;}
+.dpanel{display:none;} .dpanel.active{display:block;}
+.services-breakdown{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+.svc-row{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:.85rem 1rem;}
+.svc-name{font-size:12px;font-weight:500;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;}
+.svc-bar-track{height:4px;background:var(--border);border-radius:100px;overflow:hidden;margin-top:4px;}
+.svc-bar-fill{height:100%;background:var(--brand);border-radius:100px;}
+.svc-spend{font-family:var(--mono);font-size:11px;color:var(--text2);}
+
+/* PAYMENT MODAL */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg);border-radius:16px;padding:0;width:90%;max-width:400px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+.modal-header{background:var(--brand);padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:15px;font-weight:600;}
+.modal-subtitle{font-size:12px;opacity:.8;margin-top:2px;}
+.modal-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:1.5rem;}
+.plan-info{background:var(--bg2);border-radius:var(--radius);padding:12px 16px;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;}
+.plan-info-name{font-size:14px;font-weight:500;}
+.plan-info-price{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--brand);}
+.plan-info-per{font-size:11px;color:var(--text2);}
+.pay-methods{display:flex;flex-direction:column;gap:10px;}
+.pay-method{border:0.5px solid var(--border2);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;}
+.pay-method:hover{border-color:var(--brand);background:var(--brand-bg);}
+.pay-method.active{border-color:var(--brand);background:var(--brand-bg);}
+.pay-method-icon{font-size:22px;color:var(--brand);width:32px;text-align:center;}
+.pay-method-title{font-size:13px;font-weight:500;}
+.pay-method-desc{font-size:11px;color:var(--text2);margin-top:2px;}
+.pay-method-arrow{margin-left:auto;font-size:16px;color:var(--text2);}
+
+.upi-detail{display:none;background:var(--bg2);border-radius:var(--radius);padding:1rem;margin-top:10px;text-align:center;}
+.upi-detail.show{display:block;}
+.upi-id-box{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 14px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--brand);margin:10px 0;display:flex;align-items:center;justify-content:space-between;}
+.copy-btn{background:var(--brand);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:var(--sans);}
+.copy-btn:hover{background:#0C447C;}
+.upi-steps{text-align:left;margin-top:10px;}
+.upi-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
+.step-num{background:var(--brand);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.qr-placeholder{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin:10px auto;width:140px;height:140px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;}
+.qr-label{font-size:11px;color:var(--text2);}
+.done-btn{width:100%;margin-top:14px;padding:12px;background:#3B6D11;color:#fff;border:none;border-radius:var(--radius);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;}
+.done-btn:hover{background:#2d520d;}
+.success-state{display:none;text-align:center;padding:1rem 0;}
+.success-state.show{display:block;}
+.success-icon{font-size:48px;color:#3B6D11;margin-bottom:12px;}
+.success-title{font-size:16px;font-weight:600;margin-bottom:6px;}
+.success-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="root">
+
+<div class="topbar">
+  <div class="logo">Cloud<span>Audit</span></div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span class="plan-badge" id="planBadge">Free plan</span>
+    <div style="width:32px;height:32px;border-radius:50%;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#0C447C;">CL</div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Complete your upgrade</div>
+        <div class="modal-subtitle">Secure payment — instant activation</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Plan info row -->
+      <div class="plan-info" id="planInfoRow">
+        <div class="plan-info-name" id="modalPlanName">CloudAudit Pro</div>
+        <div>
+          <div class="plan-info-price" id="modalPlanPrice">₹999</div>
+          <div class="plan-info-per">/month</div>
+        </div>
+      </div>
+
+      <!-- Success state -->
+      <div class="success-state" id="successState">
+        <div class="success-icon"><i class="ti ti-circle-check"></i></div>
+        <div class="success-title">Payment initiated!</div>
+        <div class="success-desc">Complete the payment in your UPI app.<br>Your account will be activated within minutes.<br><br>Questions? Email <strong>support@cloudlens.in</strong></div>
+        <button class="done-btn" onclick="closeModal();activatePlan()">Done — take me to dashboard</button>
+      </div>
+
+      <!-- Payment methods -->
+      <div id="paymentMethods">
+        <div class="pay-methods">
+
+          <!-- GPay -->
+          <div class="pay-method" id="pm-gpay" onclick="selectMethod('gpay')">
+            <div class="pay-method-icon"><i class="ti ti-brand-google"></i></div>
+            <div>
+              <div class="pay-method-title">Google Pay</div>
+              <div class="pay-method-desc">Open GPay and pay directly</div>
+            </div>
+            <i class="ti ti-chevron-right pay-method-arrow"></i>
+          </div>
+          <div class="upi-detail" id="detail-gpay">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Open Google Pay and send payment to:</div>
+            <div class="upi-id-box">
+              shreyachowdhury831@oksbi
+              <button class="copy-btn" onclick="copyUPI()">Copy</button>
+            </div>
+            <div class="upi-steps">
+              <div class="upi-step"><div class="step-num">1</div>Open Google Pay on your phone</div>
+              <div class="upi-step"><div class="step-num">2</div>Tap "New Payment" → "UPI ID"</div>
+              <div class="upi-step"><div class="step-num">3</div>Paste the UPI ID above and enter ₹999 (or the amount shown)</div>
+              <div class="upi-step"><div class="step-num">4</div>Add note: "CloudAudit Pro" and confirm</div>
+            </div>
+            <button class="done-btn" onclick="showSuccess()">I've completed the payment ✓</button>
+          </div>
+
+          <!-- PhonePe -->
+          <div class="pay-method" id="pm-phonepe" onclick="selectMethod('phonepe')">
+            <div class="pay-method-icon"><i class="ti ti-device-mobile"></i></div>
+            <div>
+              <div class="pay-method-title">PhonePe / Paytm</div>
+              <div class="pay-method-desc">Any UPI app works</div>
+            </div>
+            <i class="ti ti-chevron-right pay-method-arrow"></i>
+          </div>
+          <div class="upi-detail" id="detail-phonepe">
+            <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Send payment via any UPI app to:</div>
+            <div class="upi-id-box">
+              shreyachowdhury831@oksbi
+              <button class="copy-btn" onclick="copyUPI()">Copy</button>
+            </div>
+            <div class="upi-steps">
+              <div class="upi-step"><div class="step-num">1</div>Open PhonePe, Paytm, or any UPI app</div>
+              <div class="upi-step"><div class="step-num">2</div>Go to "Send Money" → "To UPI ID"</div>
+              <div class="upi-step"><div class="step-num">3</div>Paste the UPI ID and enter ₹999 (or the amount shown)</div>
+              <div class="upi-step"><div class="step-num">4</div>Add note: "CloudAudit Pro" and pay</div>
+            </div>
+            <button class="done-btn" onclick="showSuccess()">I've completed the payment ✓</button>
+          </div>
+
+          <!-- Mobile UPI deep link -->
+          <div class="pay-method" id="pm-direct" onclick="selectMethod('direct')">
+            <div class="pay-method-icon"><i class="ti ti-qrcode"></i></div>
+            <div>
+              <div class="pay-method-title">Open UPI App directly</div>
+              <div class="pay-method-desc">Tap to open your default UPI app</div>
+            </div>
+            <i class="ti ti-chevron-right pay-method-arrow"></i>
+          </div>
+          <div class="upi-detail" id="detail-direct">
+            <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Tap the button below — it will open your default UPI app with the amount pre-filled.</div>
+            <a id="upiDeepLink" href="#" style="display:block;background:var(--brand);color:#fff;text-align:center;padding:12px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;margin-bottom:12px;" onclick="openUPILink(event)">
+              <i class="ti ti-bolt"></i> Open UPI App — Pay ₹999
+            </a>
+            <div style="font-size:11px;color:var(--text2);text-align:center;">Works on mobile. On desktop, use GPay or PhonePe above.</div>
+            <button class="done-btn" style="margin-top:12px;" onclick="showSuccess()">I've completed the payment ✓</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LANDING PAGE -->
+<div class="page active" id="page-landing">
+<div class="landing">
+  <div class="landing-hero">
+    <div class="landing-tag">// CLOUD COST INTELLIGENCE FOR SMBS</div>
+    <h1 class="landing-h1">Stop overpaying for<br><span class="hl">cloud infrastructure.</span></h1>
+    <p class="landing-sub">CloudAudit analyses your AWS, Azure, and GCP spend in minutes and surfaces actionable savings — without a cloud team on staff.</p>
+    <button class="btn-brand" onclick="goTo('page-onboard')">Start free audit</button>
+    <button class="btn-out" onclick="goTo('page-dashboard')">View demo dashboard</button>
+  </div>
+
+  <div class="features-grid">
+    <div class="feat-card">
+      <i class="ti ti-scan feat-icon"></i>
+      <div class="feat-title">Instant cost scan</div>
+      <div class="feat-desc">Connect your cloud account and get a full spend breakdown in under 3 minutes.</div>
+    </div>
+    <div class="feat-card">
+      <i class="ti ti-brain feat-icon"></i>
+      <div class="feat-title">AI recommendations</div>
+      <div class="feat-desc">Powered by models trained on 10,000+ cloud optimisation patterns.</div>
+    </div>
+    <div class="feat-card">
+      <i class="ti ti-chart-line feat-icon"></i>
+      <div class="feat-title">Savings tracker</div>
+      <div class="feat-desc">Track implemented savings month-over-month with ROI reporting for stakeholders.</div>
+    </div>
+  </div>
+
+  <div class="pricing-section">
+    <div class="section-label">PRICING</div>
+    <div class="pricing-row">
+
+      <div class="price-card">
+        <div class="price-name">Starter</div>
+        <div class="price-amt">Free</div>
+        <div class="price-per">forever</div>
+        <div class="price-features">
+          <div class="pf"><i class="ti ti-check"></i>1 cloud account</div>
+          <div class="pf"><i class="ti ti-check"></i>Top 5 recommendations</div>
+          <div class="pf no"><i class="ti ti-minus"></i>AI analysis</div>
+          <div class="pf no"><i class="ti ti-minus"></i>Export reports</div>
+        </div>
+        <button class="price-btn secondary" onclick="goTo('page-onboard')">Get started — Free</button>
+      </div>
+
+      <div class="price-card featured">
+        <div class="price-name">Pro</div>
+        <div class="price-badge">Most popular</div>
+        <div class="price-amt">₹999</div>
+        <div class="price-per">per month</div>
+        <div class="price-features">
+          <div class="pf"><i class="ti ti-check"></i>5 cloud accounts</div>
+          <div class="pf"><i class="ti ti-check"></i>Unlimited recommendations</div>
+          <div class="pf"><i class="ti ti-check"></i>AI analysis + chat</div>
+          <div class="pf"><i class="ti ti-check"></i>PDF + CSV export</div>
+        </div>
+        <button class="price-btn primary" onclick="openModal('pro')">Upgrade to Pro — ₹999/mo</button>
+      </div>
+
+      <div class="price-card">
+        <div class="price-name">Team</div>
+        <div class="price-amt">₹2,999</div>
+        <div class="price-per">per month</div>
+        <div class="price-features">
+          <div class="pf"><i class="ti ti-check"></i>Unlimited accounts</div>
+          <div class="pf"><i class="ti ti-check"></i>Team workspace</div>
+          <div class="pf"><i class="ti ti-check"></i>Slack alerts</div>
+          <div class="pf"><i class="ti ti-check"></i>Priority support</div>
+        </div>
+        <button class="price-btn secondary" onclick="openModal('team')">Get Team — ₹2,999/mo</button>
+      </div>
+
+    </div>
+    <div class="upi-notice">
+      <i class="ti ti-shield-check" style="font-size:18px;"></i>
+      Pay via GPay · PhonePe · Paytm · Any UPI app · Instant activation
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="page" id="page-onboard">
+<div class="onboard">
+  <div class="ob-label">// STEP 1 OF 2 — CONFIGURE YOUR AUDIT</div>
+  <div class="ob-title">Tell us about your setup</div>
+  <div class="ob-sub">We'll generate a personalised cost audit based on your configuration.</div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Cloud provider</label>
+      <select id="ob-provider">
+        <option>Amazon Web Services</option>
+        <option>Microsoft Azure</option>
+        <option>Google Cloud</option>
+        <option>Multi-cloud</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Team size</label>
+      <select id="ob-team">
+        <option>1–10 employees</option>
+        <option>11–50 employees</option>
+        <option>51–200 employees</option>
+        <option>200+ employees</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="slider-row">
+    <label>Monthly cloud spend</label>
+    <input type="range" min="500" max="50000" step="500" value="8000" id="ob-spend" oninput="updateSpend(this.value)">
+    <span class="slider-val" id="spend-out">₹8,000</span>
+  </div>
+
+  <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">Services you use</div>
+  <div class="service-grid">
+    <div class="svc-chip sel" onclick="toggleChip(this)"><i class="ti ti-server"></i>EC2 / VMs</div>
+    <div class="svc-chip sel" onclick="toggleChip(this)"><i class="ti ti-database"></i>Databases</div>
+    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-box"></i>Storage</div>
+    <div class="svc-chip sel" onclick="toggleChip(this)"><i class="ti ti-cloud"></i>Serverless</div>
+    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-network"></i>Networking</div>
+    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-shield"></i>Security</div>
+    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-device-analytics"></i>Analytics</div>
+    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-api"></i>APIs / CDN</div>
+  </div>
+
+  <button class="btn-brand" style="width:100%;padding:12px;" onclick="runAudit()">
+    <i class="ti ti-scan" style="margin-right:6px;"></i>Run cost audit
+  </button>
+  <button class="btn-out" style="width:100%;padding:12px;margin-top:8px;margin-left:0;" onclick="goTo('page-landing')">← Back</button>
+</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="page-dashboard">
+<div class="dash">
+
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">Cost dashboard</div>
+      <div class="dash-sub" id="dash-context">AWS · ₹8,000/mo · Last 30 days</div>
+    </div>
+    <button class="back-btn" onclick="goTo('page-landing')">← Back</button>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Monthly spend</div>
+      <div class="kpi-val" id="kpi-spend">₹8,000</div>
+      <div class="kpi-delta dn">+12% vs last month</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Potential savings</div>
+      <div class="kpi-val green" id="kpi-save">₹2,340</div>
+      <div class="kpi-delta up">29% of spend</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Idle resources</div>
+      <div class="kpi-val amber">14</div>
+      <div class="kpi-delta dn">+3 this week</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Efficiency score</div>
+      <div class="kpi-val">62<span style="font-size:13px;">/100</span></div>
+      <div class="kpi-delta dn">Below benchmark</div>
+    </div>
+  </div>
+
+  <div class="nav-tabs">
+    <button class="ntab active" onclick="switchDTab(this,'dt-overview')">Overview</button>
+    <button class="ntab" onclick="switchDTab(this,'dt-recs')">Recommendations</button>
+    <button class="ntab" onclick="switchDTab(this,'dt-services')">By service</button>
+  </div>
+
+  <div class="dpanel active" id="dt-overview">
+    <div class="stitle">MONTHLY SPEND TREND</div>
+    <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+    <div class="ai-section">
+      <div class="ai-header"><div class="ai-dot"></div><div class="ai-label">AI INSIGHT</div></div>
+      <div class="ai-text">Your cloud spend has grown 29% over 6 months, outpacing your team growth of ~10%. The primary driver is over-provisioned EC2 instances in dev/staging running 24/7. Rightsizing these alone could save <strong>₹1,100/month</strong>.</div>
+    </div>
+    <div class="stitle">SPEND BY CATEGORY</div>
+    <div class="chart-wrap" style="height:180px;"><canvas id="catChart"></canvas></div>
+  </div>
+
+  <div class="dpanel" id="dt-recs">
+    <div class="stitle">TOP SAVINGS OPPORTUNITIES</div>
+    <div class="recs-list">
+      <div class="rec-card">
+        <div class="rec-sev sev-high"></div>
+        <div class="rec-body">
+          <div class="rec-title">Rightsize 8 over-provisioned EC2 instances</div>
+          <div class="rec-desc">Running at under 15% CPU. Downsizing from m5.xlarge to m5.large saves 50% compute cost.</div>
+          <div class="rec-saving">↓ Save ₹1,100/month</div>
+          <div style="margin-top:7px;"><span class="rec-tag">EC2</span><span class="rec-tag">High impact</span></div>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-sev sev-high"></div>
+        <div class="rec-body">
+          <div class="rec-title">Delete 23 unattached EBS volumes</div>
+          <div class="rec-desc">4.6 TB not attached to any running instance — zero utilisation, full cost.</div>
+          <div class="rec-saving">↓ Save ₹460/month</div>
+          <div style="margin-top:7px;"><span class="rec-tag">Storage</span><span class="rec-tag">Quick win</span></div>
+        </div>
+      </div>
+      <div class="rec-card">
+        <div class="rec-sev sev-med"></div>
+        <div class="rec-body">
+          <div class="rec-title">Switch RDS to reserved instances</div>
+          <div class="rec-desc">Running continuously for 11 months. 1-year reserved saves 38% vs on-demand.</div>
+          <div class="rec-saving">↓ Save ₹520/month</div>
+          <div style="margin-top:7px;"><span class="rec-tag">RDS</span><span class="rec-tag">Database</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="lock-wall" id="lockWall">
+      <div style="font-size:28px;color:var(--text2);margin-bottom:12px;"><i class="ti ti-lock"></i></div>
+      <div style="font-size:14px;font-weight:500;margin-bottom:8px;">3 more recommendations locked</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">Upgrade to Pro to unlock all recommendations, AI-guided steps, and one-click PDF/CSV export.</div>
+      <button class="btn-brand" style="padding:11px 28px;" onclick="openModal('pro')">Upgrade to Pro — ₹999/month</button>
+      <div style="margin-top:10px;font-size:11px;color:var(--text2);">Pay via GPay · PhonePe · Paytm · Any UPI</div>
+    </div>
+  </div>
+
+  <div class="dpanel" id="dt-services">
+    <div class="stitle">SPEND BY SERVICE</div>
+    <div class="services-breakdown" id="svcs-breakdown"></div>
+    <div class="chart-wrap" style="height:240px;"><canvas id="svcChart"></canvas></div>
+  </div>
+
+</div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var trendC, catC, svcC;
+var currentPlan = 'pro';
+var UPI_ID = 'shreyachowdhury831@oksbi';
+
+var plans = {
+  pro:  { name: 'CloudAudit Pro',  price: '₹999',  amount: 999,  note: 'CloudAudit Pro Monthly'  },
+  team: { name: 'CloudAudit Team', price: '₹2,999', amount: 2999, note: 'CloudAudit Team Monthly' }
+};
+
+function goTo(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'page-dashboard') setTimeout(initCharts, 100);
+}
+
+function openModal(plan) {
+  currentPlan = plan;
+  var p = plans[plan];
+  document.getElementById('modalPlanName').textContent = p.name;
+  document.getElementById('modalPlanPrice').textContent = p.price;
+  document.getElementById('upiDeepLink').href = 'upi://pay?pa=' + UPI_ID + '&pn=CloudAudit&am=' + p.amount + '&cu=INR&tn=' + encodeURIComponent(p.note);
+  // Reset modal state
+  document.getElementById('successState').classList.remove('show');
+  document.getElementById('paymentMethods').style.display = 'block';
+  document.getElementById('planInfoRow').style.display = 'flex';
+  document.querySelectorAll('.upi-detail').forEach(function(d){ d.classList.remove('show'); });
+  document.querySelectorAll('.pay-method').forEach(function(m){ m.classList.remove('active'); });
+  document.getElementById('payModal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('payModal').classList.remove('open');
+}
+
+function selectMethod(method) {
+  document.querySelectorAll('.upi-detail').forEach(function(d){ d.classList.remove('show'); });
+  document.querySelectorAll('.pay-method').forEach(function(m){ m.classList.remove('active'); });
+  document.getElementById('pm-' + method).classList.add('active');
+  document.getElementById('detail-' + method).classList.add('show');
+}
+
+function openUPILink(e) {
+  var p = plans[currentPlan];
+  var link = 'upi://pay?pa=' + UPI_ID + '&pn=CloudAudit&am=' + p.amount + '&cu=INR&tn=' + encodeURIComponent(p.note);
+  window.location.href = link;
+  e.preventDefault();
+}
+
+function copyUPI() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(UPI_ID).then(function() { alert('UPI ID copied! Now open your UPI app and paste it.'); });
+  } else {
+    var el = document.createElement('textarea');
+    el.value = UPI_ID;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    alert('UPI ID copied! Now open your UPI app and paste it.');
+  }
+}
+
+function showSuccess() {
+  document.getElementById('paymentMethods').style.display = 'none';
+  document.getElementById('planInfoRow').style.display = 'none';
+  document.getElementById('successState').classList.add('show');
+}
+
+function activatePlan() {
+  var p = plans[currentPlan];
+  document.getElementById('planBadge').textContent = currentPlan === 'team' ? 'Team plan' : 'Pro plan';
+  document.getElementById('planBadge').style.background = '#E1F5EE';
+  document.getElementById('planBadge').style.color = '#085041';
+  var wall = document.getElementById('lockWall');
+  if (wall) {
+    wall.style.background = '#E1F5EE';
+    wall.innerHTML = '<div style="display:flex;align-items:center;gap:10px;justify-content:center;padding:1rem;"><i class="ti ti-circle-check" style="font-size:22px;color:#3B6D11;"></i><span style="font-size:13px;font-weight:500;color:#27500A;">'+p.name+' activated — all recommendations unlocked</span></div>';
+  }
+  goTo('page-dashboard');
+}
+
+function toggleChip(el) { el.classList.toggle('sel'); }
+
+function updateSpend(v) {
+  document.getElementById('spend-out').textContent = '₹' + Number(v).toLocaleString('en-IN');
+}
+
+function runAudit() {
+  var spend = parseInt(document.getElementById('ob-spend').value);
+  var provider = document.getElementById('ob-provider').value.split(' ')[0];
+  var save = Math.round(spend * 0.29);
+  document.getElementById('dash-context').textContent = provider + ' · ₹' + spend.toLocaleString('en-IN') + '/mo · Last 30 days';
+  document.getElementById('kpi-spend').textContent = '₹' + spend.toLocaleString('en-IN');
+  document.getElementById('kpi-save').textContent = '₹' + save.toLocaleString('en-IN');
+  goTo('page-dashboard');
+}
+
+function switchDTab(btn, id) {
+  document.querySelectorAll('.ntab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.dpanel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+  if (id === 'dt-services') buildSvcBreakdown();
+}
+
+function buildSvcBreakdown() {
+  var svcs = [
+    {name:'EC2 Compute', spend:3600, pct:45},
+    {name:'RDS Database', spend:2000, pct:25},
+    {name:'S3 Storage',   spend:1200, pct:15},
+    {name:'Lambda',       spend:700,  pct:9 }
+  ];
+  document.getElementById('svcs-breakdown').innerHTML = svcs.map(function(s) {
+    return '<div class="svc-row"><div class="svc-name"><span>'+s.name+'</span><span class="svc-spend">₹'+s.spend.toLocaleString('en-IN')+'</span></div><div class="svc-bar-track"><div class="svc-bar-fill" style="width:'+s.pct+'%"></div></div></div>';
+  }).join('');
+}
+
+function initCharts() {
+  ['trendChart','catChart','svcChart'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el && el._chart) { el._chart.destroy(); }
+  });
+  var txt = '#888';
+  var base = {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}};
+
+  var t = new Chart(document.getElementById('trendChart'), {
+    type:'line',
+    data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{data:[6200,6800,7100,7500,7800,8000],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.08)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#185FA5'}]},
+    options:Object.assign({},base,{scales:{x:{ticks:{color:txt,font:{size:11}},grid:{display:false}},y:{ticks:{color:txt,font:{size:11},callback:function(v){return '₹'+Math.round(v/1000)+'k';}},grid:{color:'rgba(0,0,0,.05)'}}}})
+  });
+  document.getElementById('trendChart')._chart = t;
+
+  var c = new Chart(document.getElementById('catChart'), {
+    type:'doughnut',
+    data:{labels:['Compute 45%','Database 25%','Storage 15%','Other 15%'],datasets:[{data:[45,25,15,15],backgroundColor:['#185FA5','#1D9E75','#BA7517','#B4B2A9'],borderWidth:0}]},
+    options:Object.assign({},base,{cutout:'65%',plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},color:txt,boxWidth:10}}}})
+  });
+  document.getElementById('catChart')._chart = c;
+
+  var s = new Chart(document.getElementById('svcChart'), {
+    type:'bar',
+    data:{labels:['EC2','RDS','S3','Lambda','CloudFront','Other'],datasets:[{data:[3600,2000,1200,700,300,200],backgroundColor:'#185FA5',borderRadius:4}]},
+    options:Object.assign({},base,{indexAxis:'y',scales:{x:{ticks:{color:txt,font:{size:11},callback:function(v){return '₹'+v.toLocaleString('en-IN');}},grid:{color:'rgba(0,0,0,.05)'}},y:{ticks:{color:txt,font:{size:11}},grid:{display:false}}}})
+  });
+  document.getElementById('svcChart')._chart = s;
+}
+
+// Close modal on overlay click
+document.getElementById('payModal').addEventListener('click', function(e){
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
