@@ -1,401 +1,492 @@
+cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CloudAudit — Free Cloud Cost Audit Tool India | Reduce AWS Azure GCP Bills</title>
-
-<meta name="description" content="CloudAudit helps Indian startups and SMBs reduce AWS, Azure and GCP bills by up to 40%. Free cloud cost audit tool. Get AI-powered savings recommendations instantly.">
-<meta name="keywords" content="cloud cost audit India, reduce AWS bill, Azure cost optimiser, GCP savings, cloud audit tool, cloud cost India">
-<meta name="author" content="CloudAudit">
-<meta property="og:title" content="CloudAudit — Free Cloud Cost Audit Tool India">
-<meta property="og:description" content="Reduce your AWS, Azure or GCP bill by up to 40% with AI-powered recommendations. Free audit. No credit card needed.">
-<meta name="robots" content="index, follow">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<title>CloudLens — Cloud Cost Intelligence</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Sora:wght@300;400;500;600&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --brand:#185FA5;--brand-bg:#E6F1FB;
-  --ok:#3B6D11;--ok-bg:#EAF3DE;
-  --danger:#A32D2D;
-  --mono:'IBM Plex Mono',monospace;
-  --sans:'Sora',sans-serif;
-  --text:#1a1a1a;--text2:#666;--text3:#999;
-  --bg:#fff;--bg2:#f7f7f5;--bg3:#f0efe9;
-  --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.18);
-  --radius:8px;--radius-lg:12px;
+  --brand:#0F4F94;--brand-dark:#0A3568;--brand-bg:#D9EBFC;--brand-light:#EEF7FF;
+  --ok:#1E5C00;--ok-bg:#DFF0D0;--warn:#7A4C00;--warn-bg:#FFF0CC;
+  --danger:#8B1A1A;--danger-bg:#FCE8E8;
+  --mono:'IBM Plex Mono',monospace;--sans:'Sora',sans-serif;
 }
-body{font-family:var(--sans);color:var(--text);background:var(--bg3);min-height:100vh;}
-.root{max-width:720px;margin:0 auto;background:var(--bg);min-height:100vh;box-shadow:0 0 0 0.5px var(--border);}
-
-/* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:0.5px solid var(--border);}
-.logo{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--brand);}
-.logo span{color:var(--text2);font-weight:400;}
-.plan-badge{background:var(--brand-bg);color:#0C447C;font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:100px;font-weight:500;}
-
-/* PAGES */
-.page{display:none;} .page.active{display:block;}
-
-/* BUTTONS */
-.btn-brand{background:var(--brand);color:#fff;border:none;padding:12px 28px;font-family:var(--sans);font-size:13px;font-weight:500;border-radius:var(--radius);cursor:pointer;transition:background .15s;}
-.btn-brand:hover{background:#0C447C;}
-.btn-out{background:transparent;color:var(--text);border:0.5px solid var(--border2);padding:12px 22px;font-family:var(--sans);font-size:13px;border-radius:var(--radius);cursor:pointer;margin-left:8px;}
-.btn-out:hover{background:var(--bg2);}
-
-/* LANDING */
-.landing{padding:2rem 1.5rem;}
-.landing-hero{text-align:center;padding:2.5rem 0 2rem;}
-.landing-tag{font-family:var(--mono);font-size:11px;color:var(--text2);letter-spacing:.06em;margin-bottom:16px;}
-.landing-h1{font-size:34px;font-weight:600;line-height:1.15;letter-spacing:-0.8px;margin-bottom:14px;}
-.landing-h1 .hl{color:var(--brand);}
-.landing-sub{font-size:14px;color:var(--text2);line-height:1.7;max-width:460px;margin:0 auto 28px;}
-
+.skip-link{position:absolute;top:-999px;left:0;z-index:9999;background:var(--brand);color:#fff;padding:10px 18px;font-family:var(--sans);font-size:14px;font-weight:600;border-radius:0 0 6px 0;text-decoration:none;}
+.skip-link:focus{top:0;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex="0"]:focus-visible{outline:3px solid var(--brand);outline-offset:3px;}
+body{font-family:var(--sans);background:var(--color-background-primary,#fff);color:var(--color-text-primary,#111);min-height:100vh;}
+.root{max-width:700px;margin:0 auto;}
+/* ── PAGE SYSTEM ── */
+.page{display:none;}.page.active{display:block;}
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--color-border-tertiary,#e5e5e5);position:sticky;top:0;background:var(--color-background-primary,#fff);z-index:100;}
+.logo{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--brand);letter-spacing:-.5px;}
+.logo span{color:var(--color-text-secondary,#666);font-weight:400;}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.plan-badge{background:var(--brand-bg);color:#0A3568;font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:100px;font-weight:600;}
+.plan-badge.pro{background:#D0F0E8;color:#0A4034;}
+.plan-badge.team{background:#EDE0FF;color:#3A006F;}
+.cloud-badge{display:none;align-items:center;gap:5px;background:var(--brand-light);color:#0A3568;font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:100px;font-weight:600;border:1px solid #B3D4F5;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:default;}
+.cloud-badge.visible{display:inline-flex;}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0A3568;cursor:pointer;position:relative;}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--sans);font-weight:600;border-radius:6px;cursor:pointer;transition:background .15s,border-color .15s;min-height:44px;padding:10px 20px;font-size:14px;border:2px solid transparent;text-decoration:none;}
+.btn-primary{background:var(--brand);color:#fff;}.btn-primary:hover{background:var(--brand-dark);}
+.btn-secondary{background:transparent;color:var(--color-text-primary,#111);border-color:var(--color-border-secondary,#ccc);}.btn-secondary:hover{background:var(--color-background-secondary,#f5f5f5);}
+.btn-danger{background:var(--danger);color:#fff;}.btn-danger:hover{background:#6B1515;}
+.btn-sm{padding:7px 14px;font-size:13px;min-height:36px;}
+.btn-full{width:100%;}
+/* ── FORMS ── */
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.form-group label{font-size:13px;font-weight:500;}
+.form-group input,.form-group select,.form-group textarea{padding:10px 12px;border:1.5px solid var(--color-border-secondary,#ccc);border-radius:6px;font-family:var(--sans);font-size:14px;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#111);min-height:44px;width:100%;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:3px solid var(--brand);outline-offset:2px;}
+.form-group input.valid{border-color:#1E5C00;background:#FAFFF8;}
+.form-group input.invalid{border-color:#8B1A1A;}
+.field-hint{font-size:11px;color:var(--color-text-secondary,#666);line-height:1.5;}
+.field-error{font-size:12px;color:var(--danger);font-weight:500;display:none;}
+.field-error.show{display:block;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* ── CARDS ── */
+.card{background:var(--color-background-primary,#fff);border:1px solid var(--color-border-tertiary,#e5e5e5);border-radius:10px;padding:1.25rem;}
+.card.featured{border:2px solid var(--brand);}
+.card.success{background:var(--ok-bg);border-color:#2E7D00;}
+.card.warning{background:var(--warn-bg);border-color:#D4940A;}
+.card.danger{background:var(--danger-bg);border-color:#C0392B;}
+/* ── LANDING ── */
+.landing{padding:2rem 1.25rem;}
+.hero{text-align:center;padding:2.5rem 0 2rem;}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;color:var(--color-text-secondary,#666);letter-spacing:.07em;margin-bottom:14px;text-transform:uppercase;}
+.hero-h1{font-size:32px;font-weight:600;line-height:1.12;letter-spacing:-1px;margin-bottom:14px;}
+.hero-h1 em{color:var(--brand);font-style:normal;}
+.hero-sub{font-size:14px;color:var(--color-text-secondary,#666);line-height:1.75;max-width:460px;margin:0 auto 28px;}
+.hero-cta{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
 .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:2rem;}
-.feat-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.2rem;}
+.feat-card{padding:1.1rem;border:1px solid var(--color-border-tertiary,#e5e5e5);border-radius:8px;}
 .feat-icon{font-size:22px;color:var(--brand);margin-bottom:10px;}
-.feat-title{font-size:13px;font-weight:500;margin-bottom:5px;}
-.feat-desc{font-size:12px;color:var(--text2);line-height:1.6;}
-
+.feat-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.feat-desc{font-size:12px;color:var(--color-text-secondary,#666);line-height:1.65;}
+/* ── AUTH PAGES ── */
+.auth-page{padding:2rem 1.25rem;max-width:420px;margin:0 auto;}
+.auth-title{font-size:22px;font-weight:600;margin-bottom:6px;}
+.auth-sub{font-size:13px;color:var(--color-text-secondary,#666);margin-bottom:24px;line-height:1.6;}
+.auth-switch{font-size:13px;color:var(--color-text-secondary,#666);margin-top:16px;text-align:center;}
+.auth-switch a{color:var(--brand);font-weight:600;cursor:pointer;text-decoration:none;}
+.auth-switch a:hover{text-decoration:underline;}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--color-text-secondary,#666);font-size:12px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--color-border-tertiary,#e5e5e5);}
+.alert{padding:10px 14px;border-radius:6px;font-size:13px;font-weight:500;margin-bottom:14px;display:none;}
+.alert.show{display:block;}
+.alert-error{background:var(--danger-bg);color:var(--danger);border:1px solid #C0392B;}
+.alert-success{background:var(--ok-bg);color:var(--ok);border:1px solid #2E7D00;}
+/* ── PRICING ── */
 .pricing-section{margin-top:2.5rem;}
-.section-label{font-size:11px;font-family:var(--mono);color:var(--text2);letter-spacing:.06em;text-align:center;margin-bottom:16px;}
-.pricing-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.price-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;}
+.pricing-h2{font-size:11px;font-family:var(--mono);color:var(--color-text-secondary,#666);letter-spacing:.07em;margin-bottom:14px;text-align:center;text-transform:uppercase;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.price-card{border:1px solid var(--color-border-tertiary,#e5e5e5);border-radius:10px;padding:1.25rem;}
 .price-card.featured{border:2px solid var(--brand);}
-.price-name{font-size:12px;font-family:var(--mono);color:var(--text2);margin-bottom:6px;}
-.price-amt{font-size:28px;font-weight:600;letter-spacing:-1px;margin-bottom:2px;}
-.price-per{font-size:11px;color:var(--text2);}
-.price-badge{display:inline-block;background:var(--brand-bg);color:#0C447C;font-size:10px;padding:2px 8px;border-radius:100px;margin:8px 0;font-family:var(--mono);}
-.price-features{margin-top:12px;display:flex;flex-direction:column;gap:7px;}
-.pf{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;}
-.pf i{font-size:14px;color:var(--ok);}
-.pf.no i{color:var(--text3);}
-.price-btn{width:100%;margin-top:16px;padding:11px;font-family:var(--sans);font-size:13px;border-radius:var(--radius);cursor:pointer;font-weight:500;transition:opacity .15s;}
-.price-btn.primary{background:var(--brand);color:#fff;border:none;}
-.price-btn.secondary{background:transparent;border:0.5px solid var(--border2);color:var(--text);}
-.price-btn:hover{opacity:.85;}
-.upi-notice{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:var(--radius);padding:12px 16px;margin-top:14px;font-size:12px;color:#085041;display:flex;align-items:center;gap:8px;}
-
-/* ONBOARD */
-.onboard{padding:2rem 1.5rem;}
-.ob-label{font-size:11px;font-family:var(--mono);color:var(--text2);margin-bottom:8px;letter-spacing:.04em;}
-.ob-title{font-size:20px;font-weight:500;margin-bottom:6px;}
-.ob-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-.form-group{display:flex;flex-direction:column;gap:5px;}
-.form-group label{font-size:12px;color:var(--text2);}
-.form-group select{padding:9px 12px;border:0.5px solid var(--border2);border-radius:var(--radius);font-family:var(--sans);font-size:13px;background:var(--bg);color:var(--text);}
-.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
-.slider-row label{font-size:12px;color:var(--text2);min-width:120px;}
-.slider-row input[type=range]{flex:1;}
-.slider-val{font-family:var(--mono);font-size:13px;font-weight:500;min-width:80px;text-align:right;}
-.service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;}
-.svc-chip{border:0.5px solid var(--border2);border-radius:var(--radius);padding:9px 8px;font-size:12px;cursor:pointer;text-align:center;transition:all .15s;background:var(--bg);}
-.svc-chip.sel{background:var(--brand-bg);border-color:var(--brand);color:#0C447C;font-weight:500;}
-.svc-chip i{display:block;font-size:20px;margin-bottom:5px;}
-
-/* DASHBOARD */
-.dash{padding:1.5rem;}
-.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.dash-title{font-size:17px;font-weight:500;}
-.dash-sub{font-size:12px;color:var(--text2);margin-top:2px;}
-.back-btn{font-size:12px;padding:7px 14px;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;cursor:pointer;font-family:var(--sans);color:var(--text);}
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
-.kpi{background:var(--bg2);border-radius:var(--radius);padding:1rem;}
-.kpi-label{font-size:11px;color:var(--text2);margin-bottom:5px;}
-.kpi-val{font-size:22px;font-weight:500;font-family:var(--mono);}
-.kpi-val.green{color:#3B6D11;} .kpi-val.amber{color:#854F0B;}
-.kpi-delta{font-size:11px;margin-top:3px;}
-.kpi-delta.up{color:var(--ok);} .kpi-delta.dn{color:var(--danger);}
-.stitle{font-size:11px;font-family:var(--mono);color:var(--text2);letter-spacing:.06em;margin-bottom:12px;}
-.chart-wrap{position:relative;width:100%;height:200px;margin-bottom:18px;}
-.recs-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
-.rec-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-lg);padding:1.1rem 1.2rem;display:flex;align-items:flex-start;gap:12px;}
-.rec-sev{width:5px;border-radius:3px;flex-shrink:0;align-self:stretch;}
-.sev-high{background:#E24B4A;} .sev-med{background:#EF9F27;}
+.price-name{font-size:12px;font-family:var(--mono);font-weight:600;color:var(--color-text-secondary,#666);margin-bottom:4px;}
+.price-badge{display:inline-block;background:var(--brand-bg);color:#0A3568;font-size:10px;padding:2px 8px;border-radius:100px;margin-bottom:6px;font-family:var(--mono);font-weight:600;}
+.price-amt{font-size:28px;font-weight:700;letter-spacing:-1px;}
+.price-per{font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:12px;}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:6px;margin:12px 0;}
+.pf{font-size:12px;color:var(--color-text-secondary,#666);display:flex;align-items:center;gap:6px;}
+.pf i.ok{color:var(--ok);font-size:14px;}
+.pf i.no{color:#aaa;font-size:14px;}
+.pf.dim{opacity:.6;}
+/* ── ONBOARD / CONNECT ── */
+.setup-page{padding:1.5rem 1.25rem;}
+.progress-bar-wrap{margin-bottom:1.5rem;}
+.progress-steps{display:flex;align-items:center;gap:0;}
+.pstep{width:28px;height:28px;border-radius:50%;font-size:12px;font-family:var(--mono);font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pstep.done{background:var(--ok);color:#fff;}
+.pstep.active{background:var(--brand);color:#fff;}
+.pstep.idle{background:var(--color-background-secondary,#f5f5f5);color:var(--color-text-secondary,#666);border:1.5px solid var(--color-border-secondary,#ccc);}
+.pline{flex:1;height:2px;background:var(--color-border-tertiary,#e5e5e5);}
+.pline.done{background:var(--ok);}
+.pstep-labels{display:flex;justify-content:space-between;margin-top:6px;}
+.pstep-lbl{font-size:11px;font-family:var(--mono);color:var(--color-text-secondary,#666);flex:1;text-align:center;}
+.pstep-lbl:first-child{text-align:left;}.pstep-lbl:last-child{text-align:right;}
+.pstep-lbl.active{color:var(--brand);font-weight:600;}.pstep-lbl.done{color:var(--ok);}
+.page-eyebrow{font-size:11px;font-family:var(--mono);color:var(--color-text-secondary,#666);letter-spacing:.05em;margin-bottom:6px;}
+.page-title{font-size:20px;font-weight:600;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--color-text-secondary,#666);margin-bottom:20px;line-height:1.65;}
+.slider-group{margin-bottom:14px;}
+.slider-group label{font-size:13px;font-weight:500;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.slider-group label span{font-family:var(--mono);font-weight:700;color:var(--brand);}
+.slider-group input[type=range]{width:100%;accent-color:var(--brand);height:6px;}
+.service-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.svc-chip{border:1.5px solid var(--color-border-secondary,#ccc);border-radius:6px;padding:10px 6px;font-size:11px;cursor:pointer;text-align:center;background:var(--color-background-primary,#fff);min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:var(--sans);font-weight:500;transition:all .15s;}
+.svc-chip i{font-size:18px;color:var(--color-text-secondary,#666);}
+.svc-chip:hover,.svc-chip[aria-pressed=true]{background:var(--brand-bg);border-color:var(--brand);color:#0A3568;}
+.svc-chip[aria-pressed=true] i{color:var(--brand);}
+.provider-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.ptab{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border:1.5px solid var(--color-border-secondary,#ccc);border-radius:6px;background:transparent;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;min-height:44px;color:var(--color-text-secondary,#666);transition:all .15s;}
+.ptab:hover{border-color:var(--brand);color:var(--brand);}
+.ptab[aria-selected=true]{background:var(--brand-bg);border-color:var(--brand);color:#0A3568;font-weight:600;}
+.ptab i{font-size:17px;}
+.id-hint-box{background:var(--color-background-secondary,#f5f5f5);border-left:3px solid var(--brand);border-radius:0 6px 6px 0;padding:9px 12px;font-size:12px;font-family:var(--mono);color:var(--color-text-secondary,#666);margin-bottom:12px;line-height:1.6;}
+.id-hint-box strong{color:var(--brand);}
+.read-only-note{display:flex;gap:8px;align-items:flex-start;background:var(--warn-bg);border:1px solid #D4940A;border-radius:6px;padding:10px 12px;font-size:12px;color:var(--warn);margin-bottom:14px;line-height:1.6;}
+.read-only-note i{font-size:16px;flex-shrink:0;margin-top:1px;}
+.connect-success{display:none;align-items:center;gap:12px;background:var(--ok-bg);border:1px solid #2E7D00;border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+.connect-success.show{display:flex;}
+.connect-success i{font-size:22px;color:var(--ok);flex-shrink:0;}
+.connect-success strong{font-size:13px;color:#1A4A08;display:block;}
+.connect-success span{font-size:12px;color:#2E5C14;font-family:var(--mono);}
+.connecting-overlay{display:none;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 1rem;text-align:center;}
+.connecting-overlay.show{display:flex;}
+.spinner{width:36px;height:36px;border:3px solid var(--brand-bg);border-top-color:var(--brand);border-radius:50%;animation:spin .75s linear infinite;margin-bottom:14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner-text{font-size:13px;color:var(--color-text-secondary,#666);font-family:var(--mono);}
+/* ── DASHBOARD ── */
+.dash{padding:1.25rem;}
+.dash-toprow{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px;flex-wrap:wrap;}
+.dash-title{font-size:16px;font-weight:600;}
+.dash-sub{font-size:12px;color:var(--color-text-secondary,#666);margin-top:3px;}
+.dash-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.account-strip{display:flex;align-items:center;gap:10px;background:var(--brand-light);border:1px solid #B3D4F5;border-radius:7px;padding:9px 14px;margin-bottom:14px;}
+.account-strip i{color:var(--brand);font-size:16px;flex-shrink:0;}
+.account-strip-info{flex:1;}
+.account-strip-label{font-size:11px;color:var(--color-text-secondary,#666);font-weight:500;}
+.account-strip-val{font-family:var(--mono);font-size:13px;font-weight:700;color:#0A3568;word-break:break-all;}
+.account-strip-provider{font-size:10px;font-family:var(--mono);background:var(--brand);color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;margin-left:auto;flex-shrink:0;}
+/* ── KPIs ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.kpi{background:var(--color-background-secondary,#f5f5f5);border-radius:8px;padding:.9rem 1rem;}
+.kpi-label{font-size:11px;color:var(--color-text-secondary,#666);font-weight:500;margin-bottom:4px;}
+.kpi-val{font-size:22px;font-weight:700;font-family:var(--mono);line-height:1;}
+.kpi-val.green{color:var(--ok);}.kpi-val.amber{color:#6B3E00;}.kpi-val.red{color:var(--danger);}
+.kpi-delta{font-size:12px;margin-top:4px;font-weight:500;}
+.kpi-delta.up{color:var(--ok);}.kpi-delta.dn{color:var(--danger);}
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:2px solid var(--color-border-tertiary,#e5e5e5);margin-bottom:1rem;gap:0;overflow-x:auto;}
+.tab{padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--color-text-secondary,#666);border-bottom:3px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);min-height:44px;white-space:nowrap;transition:color .15s;margin-bottom:-2px;}
+.tab:hover{color:var(--color-text-primary,#111);}
+.tab[aria-selected=true]{color:var(--brand);border-bottom-color:var(--brand);font-weight:600;}
+.tabpanel{display:none;}.tabpanel.active{display:block;}
+/* ── CHART ── */
+.chart-wrap{position:relative;width:100%;height:200px;margin-bottom:14px;}
+.chart-wrap.tall{height:220px;}
+.section-eyebrow{font-size:11px;font-family:var(--mono);color:var(--color-text-secondary,#666);letter-spacing:.06em;margin-bottom:8px;font-weight:600;text-transform:uppercase;}
+/* ── RECS ── */
+.recs-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;list-style:none;}
+.rec-card{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--color-border-tertiary,#e5e5e5);border-radius:8px;padding:1rem 1.1rem;background:var(--color-background-primary,#fff);}
+.rec-sev-bar{width:5px;border-radius:3px;align-self:stretch;flex-shrink:0;min-height:20px;}
+.sev-high{background:#C0392B;}.sev-med{background:#D4830A;}.sev-low{background:#2E7D00;}
 .rec-body{flex:1;}
-.rec-title{font-size:13px;font-weight:500;margin-bottom:4px;}
-.rec-desc{font-size:12px;color:var(--text2);line-height:1.6;}
-.rec-saving{font-family:var(--mono);font-size:12px;color:var(--ok);font-weight:500;margin-top:6px;}
-.rec-tag{display:inline-block;background:var(--bg2);border:0.5px solid var(--border);border-radius:4px;font-size:10px;font-family:var(--mono);padding:2px 7px;margin-right:4px;color:var(--text2);}
-.lock-wall{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:2rem;text-align:center;}
-.ai-section{border:0.5px solid var(--border2);border-radius:var(--radius-lg);padding:1.1rem 1.2rem;margin-bottom:18px;}
-.ai-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.ai-dot{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:pulse 2s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.ai-label{font-size:11px;font-family:var(--mono);color:var(--brand);font-weight:500;}
-.ai-text{font-size:13px;color:var(--text2);line-height:1.7;}
-.nav-tabs{display:flex;border-bottom:0.5px solid var(--border);margin-bottom:1.25rem;}
-.ntab{padding:9px 16px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--sans);}
-.ntab.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:500;}
-.dpanel{display:none;} .dpanel.active{display:block;}
-.services-breakdown{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
-.svc-row{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:.85rem 1rem;}
-.svc-name{font-size:12px;font-weight:500;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;}
-.svc-bar-track{height:4px;background:var(--border);border-radius:100px;overflow:hidden;margin-top:4px;}
-.svc-bar-fill{height:100%;background:var(--brand);border-radius:100px;}
-.svc-spend{font-family:var(--mono);font-size:11px;color:var(--text2);}
-
-/* PAYMENT MODAL */
-.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.55);z-index:1000;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--bg);border-radius:16px;padding:0;width:90%;max-width:400px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
-.modal-header{background:var(--brand);padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between;}
-.modal-title{font-size:15px;font-weight:600;}
-.modal-subtitle{font-size:12px;opacity:.8;margin-top:2px;}
-.modal-close{background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
-.modal-body{padding:1.5rem;}
-.plan-info{background:var(--bg2);border-radius:var(--radius);padding:12px 16px;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;}
-.plan-info-name{font-size:14px;font-weight:500;}
-.plan-info-price{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--brand);}
-.plan-info-per{font-size:11px;color:var(--text2);}
-.pay-methods{display:flex;flex-direction:column;gap:10px;}
-.pay-method{border:0.5px solid var(--border2);border-radius:var(--radius);padding:14px 16px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;}
-.pay-method:hover{border-color:var(--brand);background:var(--brand-bg);}
-.pay-method.active{border-color:var(--brand);background:var(--brand-bg);}
-.pay-method-icon{font-size:22px;color:var(--brand);width:32px;text-align:center;}
-.pay-method-title{font-size:13px;font-weight:500;}
-.pay-method-desc{font-size:11px;color:var(--text2);margin-top:2px;}
-.pay-method-arrow{margin-left:auto;font-size:16px;color:var(--text2);}
-
-.upi-detail{display:none;background:var(--bg2);border-radius:var(--radius);padding:1rem;margin-top:10px;text-align:center;}
-.upi-detail.show{display:block;}
-.upi-id-box{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--radius);padding:10px 14px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--brand);margin:10px 0;display:flex;align-items:center;justify-content:space-between;}
-.copy-btn{background:var(--brand);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:11px;cursor:pointer;font-family:var(--sans);}
-.copy-btn:hover{background:#0C447C;}
-.upi-steps{text-align:left;margin-top:10px;}
-.upi-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
-.step-num{background:var(--brand);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.qr-placeholder{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin:10px auto;width:140px;height:140px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;}
-.qr-label{font-size:11px;color:var(--text2);}
-.done-btn{width:100%;margin-top:14px;padding:12px;background:#3B6D11;color:#fff;border:none;border-radius:var(--radius);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;}
-.done-btn:hover{background:#2d520d;}
-.success-state{display:none;text-align:center;padding:1rem 0;}
-.success-state.show{display:block;}
-.success-icon{font-size:48px;color:#3B6D11;margin-bottom:12px;}
-.success-title{font-size:16px;font-weight:600;margin-bottom:6px;}
-.success-desc{font-size:13px;color:var(--text2);line-height:1.6;}
+.sev-tag{font-size:10px;font-family:var(--mono);font-weight:700;padding:2px 6px;border-radius:4px;margin-bottom:5px;display:inline-block;}
+.sev-tag.high{background:var(--danger-bg);color:var(--danger);}
+.sev-tag.medium{background:var(--warn-bg);color:var(--warn);}
+.sev-tag.low{background:var(--ok-bg);color:var(--ok);}
+.rec-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.rec-desc{font-size:12px;color:var(--color-text-secondary,#666);line-height:1.6;margin-bottom:6px;}
+.rec-saving{font-family:var(--mono);font-size:12px;color:var(--ok);font-weight:700;}
+.rec-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.rtag{font-size:10px;font-family:var(--mono);background:var(--color-background-secondary,#f5f5f5);border:1px solid var(--color-border-tertiary,#e5e5e5);border-radius:4px;padding:2px 6px;color:var(--color-text-secondary,#666);}
+.rec-actions{display:flex;gap:6px;margin-top:8px;}
+.lock-wall{background:var(--color-background-secondary,#f5f5f5);border:1px solid var(--color-border-secondary,#ccc);border-radius:10px;padding:2rem;text-align:center;margin-top:8px;}
+.lock-icon{font-size:28px;color:var(--color-text-secondary,#666);margin-bottom:10px;}
+.lock-title{font-size:14px;font-weight:600;margin-bottom:6px;}
+.lock-desc{font-size:13px;color:var(--color-text-secondary,#666);margin-bottom:14px;line-height:1.6;}
+/* ── SERVICES ── */
+.svc-breakdown{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px;}
+.svc-item{border:1px solid var(--color-border-tertiary,#e5e5e5);border-radius:7px;padding:.75rem 1rem;background:var(--color-background-primary,#fff);}
+.svc-item-name{font-size:12px;font-weight:600;display:flex;justify-content:space-between;margin-bottom:5px;}
+.svc-item-spend{font-family:var(--mono);font-size:11px;color:var(--color-text-secondary,#666);}
+.bar-track{height:5px;background:var(--color-border-tertiary,#e5e5e5);border-radius:100px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--brand);border-radius:100px;}
+/* ── AI INSIGHT ── */
+.ai-box{border:1px solid var(--color-border-secondary,#ccc);border-radius:8px;padding:1rem 1.1rem;margin-bottom:14px;}
+.ai-header{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.ai-pulse{width:8px;height:8px;border-radius:50%;background:var(--brand);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.ai-label{font-size:11px;font-family:var(--mono);color:var(--brand);font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.ai-text{font-size:13px;color:var(--color-text-secondary,#666);line-height:1.75;}
+/* ── EXPORT ── */
+.export-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+/* ── SETTINGS / PROFILE ── */
+.settings-page{padding:1.5rem 1.25rem;}
+.settings-section{margin-bottom:2rem;}
+.settings-h2{font-size:13px;font-family:var(--mono);color:var(--color-text-secondary,#666);letter-spacing:.06em;margin-bottom:12px;text-transform:uppercase;font-weight:600;border-bottom:1px solid var(--color-border-tertiary,#e5e5e5);padding-bottom:6px;}
+/* ── USER MENU DROPDOWN ── */
+.user-menu{position:absolute;top:42px;right:0;background:var(--color-background-primary,#fff);border:1px solid var(--color-border-secondary,#ccc);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);min-width:170px;z-index:200;display:none;overflow:hidden;}
+.user-menu.open{display:block;}
+.user-menu-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;cursor:pointer;color:var(--color-text-primary,#111);transition:background .12s;font-family:var(--sans);}
+.user-menu-item:hover{background:var(--color-background-secondary,#f5f5f5);}
+.user-menu-item.danger{color:var(--danger);}
+.user-menu-sep{height:1px;background:var(--color-border-tertiary,#e5e5e5);margin:3px 0;}
+/* ── MODAL ── */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:300;align-items:center;justify-content:center;padding:16px;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--color-background-primary,#fff);border-radius:10px;padding:1.5rem;max-width:420px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:8px;}
+.modal-body{font-size:13px;color:var(--color-text-secondary,#666);line-height:1.65;margin-bottom:18px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+/* ── TOAST ── */
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120px);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:7px;font-size:13px;font-weight:500;z-index:500;pointer-events:none;font-family:var(--sans);max-width:90vw;text-align:center;border-left:4px solid var(--brand);transition:transform .3s;white-space:nowrap;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+/* ── ACCESSIBLE TABLE ── */
+.data-table-wrap{overflow-x:auto;margin-bottom:14px;}
+table.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+table.data-table th{text-align:left;padding:8px 10px;border-bottom:2px solid var(--color-border-tertiary,#e5e5e5);font-size:12px;font-family:var(--mono);color:var(--color-text-secondary,#666);text-transform:uppercase;letter-spacing:.04em;}
+table.data-table td{padding:8px 10px;border-bottom:1px solid var(--color-border-tertiary,#e5e5e5);}
+table.data-table tr:last-child td{border-bottom:none;}
+/* ── MOBILE ── */
+@media(max-width:560px){
+  .features-grid,.pricing-grid{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .service-grid{grid-template-columns:repeat(3,1fr);}
+  .svc-breakdown{grid-template-columns:1fr;}
+  .hero-h1{font-size:24px;}
+  .tabs{gap:0;}.tab{padding:10px 12px;font-size:12px;}
+  .dash-actions{width:100%;}
+  .export-bar{flex-direction:column;}
+}
+@media(max-width:380px){
+  .service-grid{grid-template-columns:repeat(2,1fr);}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .topbar{padding:10px 12px;}
+}
+@media(forced-colors:active){.btn,.ptab,.svc-chip{border:2px solid ButtonText;}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 </head>
 <body>
+
+<!-- ACCESSIBILITY -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div id="live-region" role="status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+<div id="alert-region" role="alert" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
+
 <div class="root">
 
-<div class="topbar">
-  <div class="logo">Cloud<span>Audit</span></div>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <span class="plan-badge" id="planBadge">Free plan</span>
-    <div style="width:32px;height:32px;border-radius:50%;background:var(--brand-bg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#0C447C;">CL</div>
-  </div>
-</div>
-
-<!-- PAYMENT MODAL -->
-<div class="modal-overlay" id="payModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title">Complete your upgrade</div>
-        <div class="modal-subtitle">Secure payment — instant activation</div>
+<!-- ═══════════════════════════════════════════
+     TOPBAR
+═══════════════════════════════════════════ -->
+<header class="topbar" role="banner">
+  <div class="logo" aria-label="CloudLens">Cloud<span>Lens</span></div>
+  <nav class="topbar-right" aria-label="Account navigation">
+    <span class="cloud-badge" id="cloudBadge" role="status" aria-label="Connected cloud account">
+      <i class="ti ti-cloud-check" aria-hidden="true"></i>
+      <span id="cloudBadgeText"></span>
+    </span>
+    <span class="plan-badge" id="planBadge" role="status">Free</span>
+    <div style="position:relative;">
+      <div class="avatar" id="avatarBtn" role="button" tabindex="0"
+           aria-haspopup="true" aria-expanded="false" aria-label="Open user menu"
+           onclick="toggleUserMenu()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleUserMenu();}">
+        AS
       </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-
-      <!-- Plan info row -->
-      <div class="plan-info" id="planInfoRow">
-        <div class="plan-info-name" id="modalPlanName">CloudAudit Pro</div>
-        <div>
-          <div class="plan-info-price" id="modalPlanPrice">₹999</div>
-          <div class="plan-info-per">/month</div>
+      <div class="user-menu" id="userMenu" role="menu" aria-label="User menu">
+        <div class="user-menu-item" role="menuitem" tabindex="0" onclick="showPage('page-settings');closeUserMenu();" onkeydown="menuKey(event,'page-settings')">
+          <i class="ti ti-settings" aria-hidden="true"></i> Settings
         </div>
-      </div>
-
-      <!-- Success state -->
-      <div class="success-state" id="successState">
-        <div class="success-icon"><i class="ti ti-circle-check"></i></div>
-        <div class="success-title">Payment initiated!</div>
-        <div class="success-desc">Complete the payment in your UPI app.<br>Your account will be activated within minutes.<br><br>Questions? Email <strong>support@cloudlens.in</strong></div>
-        <button class="done-btn" onclick="closeModal();activatePlan()">Done — take me to dashboard</button>
-      </div>
-
-      <!-- Payment methods -->
-      <div id="paymentMethods">
-        <div class="pay-methods">
-
-          <!-- GPay -->
-          <div class="pay-method" id="pm-gpay" onclick="selectMethod('gpay')">
-            <div class="pay-method-icon"><i class="ti ti-brand-google"></i></div>
-            <div>
-              <div class="pay-method-title">Google Pay</div>
-              <div class="pay-method-desc">Open GPay and pay directly</div>
-            </div>
-            <i class="ti ti-chevron-right pay-method-arrow"></i>
-          </div>
-          <div class="upi-detail" id="detail-gpay">
-            <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Open Google Pay and send payment to:</div>
-            <div class="upi-id-box">
-              shreyachowdhury831@oksbi
-              <button class="copy-btn" onclick="copyUPI()">Copy</button>
-            </div>
-            <div class="upi-steps">
-              <div class="upi-step"><div class="step-num">1</div>Open Google Pay on your phone</div>
-              <div class="upi-step"><div class="step-num">2</div>Tap "New Payment" → "UPI ID"</div>
-              <div class="upi-step"><div class="step-num">3</div>Paste the UPI ID above and enter ₹999 (or the amount shown)</div>
-              <div class="upi-step"><div class="step-num">4</div>Add note: "CloudAudit Pro" and confirm</div>
-            </div>
-            <button class="done-btn" onclick="showSuccess()">I've completed the payment ✓</button>
-          </div>
-
-          <!-- PhonePe -->
-          <div class="pay-method" id="pm-phonepe" onclick="selectMethod('phonepe')">
-            <div class="pay-method-icon"><i class="ti ti-device-mobile"></i></div>
-            <div>
-              <div class="pay-method-title">PhonePe / Paytm</div>
-              <div class="pay-method-desc">Any UPI app works</div>
-            </div>
-            <i class="ti ti-chevron-right pay-method-arrow"></i>
-          </div>
-          <div class="upi-detail" id="detail-phonepe">
-            <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Send payment via any UPI app to:</div>
-            <div class="upi-id-box">
-              shreyachowdhury831@oksbi
-              <button class="copy-btn" onclick="copyUPI()">Copy</button>
-            </div>
-            <div class="upi-steps">
-              <div class="upi-step"><div class="step-num">1</div>Open PhonePe, Paytm, or any UPI app</div>
-              <div class="upi-step"><div class="step-num">2</div>Go to "Send Money" → "To UPI ID"</div>
-              <div class="upi-step"><div class="step-num">3</div>Paste the UPI ID and enter ₹999 (or the amount shown)</div>
-              <div class="upi-step"><div class="step-num">4</div>Add note: "CloudAudit Pro" and pay</div>
-            </div>
-            <button class="done-btn" onclick="showSuccess()">I've completed the payment ✓</button>
-          </div>
-
-          <!-- Mobile UPI deep link -->
-          <div class="pay-method" id="pm-direct" onclick="selectMethod('direct')">
-            <div class="pay-method-icon"><i class="ti ti-qrcode"></i></div>
-            <div>
-              <div class="pay-method-title">Open UPI App directly</div>
-              <div class="pay-method-desc">Tap to open your default UPI app</div>
-            </div>
-            <i class="ti ti-chevron-right pay-method-arrow"></i>
-          </div>
-          <div class="upi-detail" id="detail-direct">
-            <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">Tap the button below — it will open your default UPI app with the amount pre-filled.</div>
-            <a id="upiDeepLink" href="#" style="display:block;background:var(--brand);color:#fff;text-align:center;padding:12px;border-radius:var(--radius);font-size:13px;font-weight:500;text-decoration:none;margin-bottom:12px;" onclick="openUPILink(event)">
-              <i class="ti ti-bolt"></i> Open UPI App — Pay ₹999
-            </a>
-            <div style="font-size:11px;color:var(--text2);text-align:center;">Works on mobile. On desktop, use GPay or PhonePe above.</div>
-            <button class="done-btn" style="margin-top:12px;" onclick="showSuccess()">I've completed the payment ✓</button>
-          </div>
-
+        <div class="user-menu-sep" role="separator"></div>
+        <div class="user-menu-item danger" role="menuitem" tabindex="0" onclick="openModal('modal-signout')" onkeydown="menuKey(event,null,'modal-signout')">
+          <i class="ti ti-logout" aria-hidden="true"></i> Sign out
         </div>
       </div>
     </div>
-  </div>
-</div>
+  </nav>
+</header>
 
-<!-- LANDING PAGE -->
+<main id="main-content">
+
+<!-- ═══════════════════════════════════════════
+     LANDING
+═══════════════════════════════════════════ -->
 <div class="page active" id="page-landing">
 <div class="landing">
-  <div class="landing-hero">
-    <div class="landing-tag">// CLOUD COST INTELLIGENCE FOR SMBS</div>
-    <h1 class="landing-h1">Stop overpaying for<br><span class="hl">cloud infrastructure.</span></h1>
-    <p class="landing-sub">CloudAudit analyses your AWS, Azure, and GCP spend in minutes and surfaces actionable savings — without a cloud team on staff.</p>
-    <button class="btn-brand" onclick="goTo('page-onboard')">Start free audit</button>
-    <button class="btn-out" onclick="goTo('page-dashboard')">View demo dashboard</button>
+  <div class="hero">
+    <p class="hero-eyebrow" aria-hidden="true">// Cloud Cost Intelligence for SMBs</p>
+    <h1 class="hero-h1">Stop overpaying for<br><em>cloud infrastructure.</em></h1>
+    <p class="hero-sub">CloudLens connects to your AWS, Azure, or GCP account and surfaces real savings in minutes — no cloud team required.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="showPage('page-register')" aria-describedby="cta-desc">
+        <i class="ti ti-sparkles" aria-hidden="true"></i> Start free audit
+      </button>
+      <button class="btn btn-secondary" onclick="runDemo()">View demo dashboard</button>
+    </div>
+    <p id="cta-desc" class="sr-only">Free forever. No credit card required.</p>
   </div>
 
-  <div class="features-grid">
-    <div class="feat-card">
-      <i class="ti ti-scan feat-icon"></i>
-      <div class="feat-title">Instant cost scan</div>
-      <div class="feat-desc">Connect your cloud account and get a full spend breakdown in under 3 minutes.</div>
+  <section aria-labelledby="features-h2">
+    <h2 id="features-h2" class="sr-only">Features</h2>
+    <div class="features-grid">
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true"><i class="ti ti-scan"></i></div>
+        <h3 class="feat-title">Instant cost scan</h3>
+        <p class="feat-desc">Connect your cloud account ID and get a full spend breakdown in under 3 minutes.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true"><i class="ti ti-brain"></i></div>
+        <h3 class="feat-title">AI recommendations</h3>
+        <p class="feat-desc">Smart savings suggestions trained on 10,000+ real cloud infrastructure patterns.</p>
+      </article>
+      <article class="feat-card">
+        <div class="feat-icon" aria-hidden="true"><i class="ti ti-chart-line"></i></div>
+        <h3 class="feat-title">Savings tracker</h3>
+        <p class="feat-desc">Track what you've saved month-over-month with exportable reports for stakeholders.</p>
+      </article>
     </div>
-    <div class="feat-card">
-      <i class="ti ti-brain feat-icon"></i>
-      <div class="feat-title">AI recommendations</div>
-      <div class="feat-desc">Powered by models trained on 10,000+ cloud optimisation patterns.</div>
-    </div>
-    <div class="feat-card">
-      <i class="ti ti-chart-line feat-icon"></i>
-      <div class="feat-title">Savings tracker</div>
-      <div class="feat-desc">Track implemented savings month-over-month with ROI reporting for stakeholders.</div>
-    </div>
-  </div>
+  </section>
 
-  <div class="pricing-section">
-    <div class="section-label">PRICING</div>
-    <div class="pricing-row">
-
-      <div class="price-card">
+  <section class="pricing-section" aria-labelledby="pricing-h2">
+    <h2 id="pricing-h2" class="pricing-h2">Pricing</h2>
+    <div class="pricing-grid">
+      <article class="price-card" aria-label="Free plan">
         <div class="price-name">Starter</div>
-        <div class="price-amt">Free</div>
+        <div class="price-amt" aria-label="Free">Free</div>
         <div class="price-per">forever</div>
-        <div class="price-features">
-          <div class="pf"><i class="ti ti-check"></i>1 cloud account</div>
-          <div class="pf"><i class="ti ti-check"></i>Top 5 recommendations</div>
-          <div class="pf no"><i class="ti ti-minus"></i>AI analysis</div>
-          <div class="pf no"><i class="ti ti-minus"></i>Export reports</div>
-        </div>
-        <button class="price-btn secondary" onclick="goTo('page-onboard')">Get started — Free</button>
-      </div>
-
-      <div class="price-card featured">
+        <ul class="price-features" aria-label="Included features">
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> 1 cloud account</li>
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> Top 5 recommendations</li>
+          <li class="pf dim"><i class="ti ti-minus no" aria-hidden="true"></i> AI analysis <span class="sr-only">(not included)</span></li>
+          <li class="pf dim"><i class="ti ti-minus no" aria-hidden="true"></i> Export reports <span class="sr-only">(not included)</span></li>
+        </ul>
+        <button class="btn btn-secondary btn-full" onclick="showPage('page-register')">Get started free</button>
+      </article>
+      <article class="price-card featured" aria-label="Pro plan, most popular, $49 per month">
         <div class="price-name">Pro</div>
         <div class="price-badge">Most popular</div>
-        <div class="price-amt">₹999</div>
+        <div class="price-amt" aria-label="$49">$49</div>
         <div class="price-per">per month</div>
-        <div class="price-features">
-          <div class="pf"><i class="ti ti-check"></i>5 cloud accounts</div>
-          <div class="pf"><i class="ti ti-check"></i>Unlimited recommendations</div>
-          <div class="pf"><i class="ti ti-check"></i>AI analysis + chat</div>
-          <div class="pf"><i class="ti ti-check"></i>PDF + CSV export</div>
-        </div>
-        <button class="price-btn primary" onclick="openModal('pro')">Upgrade to Pro — ₹999/mo</button>
-      </div>
-
-      <div class="price-card">
+        <ul class="price-features" aria-label="Included features">
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> 5 cloud accounts</li>
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> All recommendations</li>
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> AI analysis + chat</li>
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> PDF + CSV export</li>
+        </ul>
+        <button class="btn btn-primary btn-full" onclick="startCheckout('pro')">Upgrade to Pro</button>
+      </article>
+      <article class="price-card" aria-label="Team plan, $149 per month">
         <div class="price-name">Team</div>
-        <div class="price-amt">₹2,999</div>
+        <div class="price-amt" aria-label="$149">$149</div>
         <div class="price-per">per month</div>
-        <div class="price-features">
-          <div class="pf"><i class="ti ti-check"></i>Unlimited accounts</div>
-          <div class="pf"><i class="ti ti-check"></i>Team workspace</div>
-          <div class="pf"><i class="ti ti-check"></i>Slack alerts</div>
-          <div class="pf"><i class="ti ti-check"></i>Priority support</div>
-        </div>
-        <button class="price-btn secondary" onclick="openModal('team')">Get Team — ₹2,999/mo</button>
-      </div>
+        <ul class="price-features" aria-label="Included features">
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> Unlimited accounts</li>
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> Team workspace</li>
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> Slack + email alerts</li>
+          <li class="pf"><i class="ti ti-check ok" aria-hidden="true"></i> Priority support</li>
+        </ul>
+        <button class="btn btn-secondary btn-full" onclick="startCheckout('team')">Contact sales</button>
+      </article>
+    </div>
+  </section>
+</div>
+</div>
 
-    </div>
-    <div class="upi-notice">
-      <i class="ti ti-shield-check" style="font-size:18px;"></i>
-      Pay via GPay · PhonePe · Paytm · Any UPI app · Instant activation
-    </div>
+<!-- ═══════════════════════════════════════════
+     REGISTER
+═══════════════════════════════════════════ -->
+<div class="page" id="page-register">
+<div class="auth-page">
+  <h1 class="auth-title" tabindex="-1" id="register-heading">Create your account</h1>
+  <p class="auth-sub">Free forever. No credit card required.</p>
+  <div class="alert alert-error" id="register-error" role="alert"></div>
+  <div class="form-group">
+    <label for="reg-name">Full name</label>
+    <input type="text" id="reg-name" name="fullName" autocomplete="name" required aria-required="true" placeholder="Alex Smith">
   </div>
+  <div class="form-group">
+    <label for="reg-email">Work email</label>
+    <input type="email" id="reg-email" name="email" autocomplete="email" required aria-required="true" placeholder="alex@company.com">
+  </div>
+  <div class="form-group">
+    <label for="reg-pass">Password</label>
+    <input type="password" id="reg-pass" name="password" autocomplete="new-password" required aria-required="true" aria-describedby="pass-hint" placeholder="Min 8 characters">
+    <span id="pass-hint" class="field-hint">At least 8 characters.</span>
+  </div>
+  <button class="btn btn-primary btn-full" id="reg-btn" onclick="doRegister()">
+    <i class="ti ti-user-plus" aria-hidden="true"></i> Create account
+  </button>
+  <p class="auth-switch">Already have an account? <a onclick="showPage('page-login')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')showPage('page-login')">Sign in</a></p>
+  <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="showPage('page-landing')">← Back</button>
 </div>
 </div>
 
-<!-- ONBOARDING -->
+<!-- ═══════════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════════ -->
+<div class="page" id="page-login">
+<div class="auth-page">
+  <h1 class="auth-title" tabindex="-1" id="login-heading">Welcome back</h1>
+  <p class="auth-sub">Sign in to your CloudLens account.</p>
+  <div class="alert alert-error" id="login-error" role="alert"></div>
+  <div class="alert alert-success" id="login-success" role="status"></div>
+  <div class="form-group">
+    <label for="login-email">Email</label>
+    <input type="email" id="login-email" name="email" autocomplete="email" required aria-required="true">
+  </div>
+  <div class="form-group">
+    <label for="login-pass">Password</label>
+    <input type="password" id="login-pass" name="password" autocomplete="current-password" required aria-required="true">
+    <span style="margin-top:4px;"><a onclick="showPage('page-forgot')" style="font-size:12px;color:var(--brand);cursor:pointer;font-weight:500;" role="button" tabindex="0" onkeydown="if(event.key==='Enter')showPage('page-forgot')">Forgot password?</a></span>
+  </div>
+  <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()">
+    <i class="ti ti-login" aria-hidden="true"></i> Sign in
+  </button>
+  <p class="auth-switch">Don't have an account? <a onclick="showPage('page-register')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')showPage('page-register')">Sign up free</a></p>
+  <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="showPage('page-landing')">← Back</button>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FORGOT PASSWORD
+═══════════════════════════════════════════ -->
+<div class="page" id="page-forgot">
+<div class="auth-page">
+  <h1 class="auth-title" tabindex="-1" id="forgot-heading">Reset password</h1>
+  <p class="auth-sub">We'll send a reset link to your email address.</p>
+  <div class="alert alert-success" id="forgot-msg" role="status"></div>
+  <div class="form-group">
+    <label for="forgot-email">Email address</label>
+    <input type="email" id="forgot-email" autocomplete="email" required aria-required="true">
+  </div>
+  <button class="btn btn-primary btn-full" onclick="doForgot()">Send reset link</button>
+  <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="showPage('page-login')">← Back to sign in</button>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ONBOARD STEP 1
+═══════════════════════════════════════════ -->
 <div class="page" id="page-onboard">
-<div class="onboard">
-  <div class="ob-label">// STEP 1 OF 2 — CONFIGURE YOUR AUDIT</div>
-  <div class="ob-title">Tell us about your setup</div>
-  <div class="ob-sub">We'll generate a personalised cost audit based on your configuration.</div>
-
+<div class="setup-page">
+  <nav aria-label="Setup progress">
+    <div class="progress-steps" aria-hidden="true">
+      <div class="pstep active">1</div>
+      <div class="pline"></div>
+      <div class="pstep idle">2</div>
+    </div>
+    <div class="pstep-labels" aria-hidden="true">
+      <span class="pstep-lbl active">Your setup</span>
+      <span class="pstep-lbl">Connect account</span>
+    </div>
+  </nav>
+  <p class="page-eyebrow" aria-hidden="true">// Step 1 of 2</p>
+  <h1 class="page-title" tabindex="-1" id="onboard-h1">Tell us about your setup</h1>
+  <p class="page-sub">We'll tailor your cost audit to your infrastructure.</p>
   <div class="form-row">
     <div class="form-group">
-      <label>Cloud provider</label>
-      <select id="ob-provider">
-        <option>Amazon Web Services</option>
-        <option>Microsoft Azure</option>
-        <option>Google Cloud</option>
-        <option>Multi-cloud</option>
+      <label for="ob-provider">Cloud provider</label>
+      <select id="ob-provider" onchange="syncProviderTab()">
+        <option value="aws">Amazon Web Services</option>
+        <option value="azure">Microsoft Azure</option>
+        <option value="gcp">Google Cloud</option>
+        <option value="multi">Multi-cloud</option>
       </select>
     </div>
     <div class="form-group">
-      <label>Team size</label>
+      <label for="ob-team">Team size</label>
       <select id="ob-team">
         <option>1–10 employees</option>
         <option>11–50 employees</option>
@@ -404,289 +495,1195 @@ body{font-family:var(--sans);color:var(--text);background:var(--bg3);min-height:
       </select>
     </div>
   </div>
-
-  <div class="slider-row">
-    <label>Monthly cloud spend</label>
-    <input type="range" min="500" max="50000" step="500" value="8000" id="ob-spend" oninput="updateSpend(this.value)">
-    <span class="slider-val" id="spend-out">₹8,000</span>
+  <div class="slider-group">
+    <label for="ob-spend">Monthly cloud spend <span id="spend-val">$8,000</span></label>
+    <input type="range" id="ob-spend" min="500" max="50000" step="500" value="8000"
+           aria-valuemin="500" aria-valuemax="50000" aria-valuenow="8000" aria-valuetext="$8,000 per month"
+           oninput="updateSpend(this.value)">
   </div>
-
-  <div style="font-size:12px;color:var(--text2);margin-bottom:10px;">Services you use</div>
-  <div class="service-grid">
-    <div class="svc-chip sel" onclick="toggleChip(this)"><i class="ti ti-server"></i>EC2 / VMs</div>
-    <div class="svc-chip sel" onclick="toggleChip(this)"><i class="ti ti-database"></i>Databases</div>
-    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-box"></i>Storage</div>
-    <div class="svc-chip sel" onclick="toggleChip(this)"><i class="ti ti-cloud"></i>Serverless</div>
-    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-network"></i>Networking</div>
-    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-shield"></i>Security</div>
-    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-device-analytics"></i>Analytics</div>
-    <div class="svc-chip" onclick="toggleChip(this)"><i class="ti ti-api"></i>APIs / CDN</div>
-  </div>
-
-  <button class="btn-brand" style="width:100%;padding:12px;" onclick="runAudit()">
-    <i class="ti ti-scan" style="margin-right:6px;"></i>Run cost audit
+  <fieldset style="border:none;padding:0;margin-bottom:16px;">
+    <legend class="field-hint" style="font-size:13px;font-weight:500;color:var(--color-text-primary,#111);margin-bottom:8px;float:none;width:100%;">
+      Services you use <span style="font-weight:400;color:var(--color-text-secondary,#666);">(select all that apply)</span>
+    </legend>
+    <div class="service-grid">
+      <button type="button" class="svc-chip" aria-pressed="true" onclick="toggleSvc(this)" aria-label="EC2 and VMs"><i class="ti ti-server"></i>EC2/VMs</button>
+      <button type="button" class="svc-chip" aria-pressed="true" onclick="toggleSvc(this)" aria-label="Databases"><i class="ti ti-database"></i>Databases</button>
+      <button type="button" class="svc-chip" aria-pressed="false" onclick="toggleSvc(this)" aria-label="Storage"><i class="ti ti-box"></i>Storage</button>
+      <button type="button" class="svc-chip" aria-pressed="true" onclick="toggleSvc(this)" aria-label="Serverless"><i class="ti ti-cloud"></i>Serverless</button>
+      <button type="button" class="svc-chip" aria-pressed="false" onclick="toggleSvc(this)" aria-label="Networking"><i class="ti ti-network"></i>Networking</button>
+      <button type="button" class="svc-chip" aria-pressed="false" onclick="toggleSvc(this)" aria-label="Security"><i class="ti ti-shield"></i>Security</button>
+      <button type="button" class="svc-chip" aria-pressed="false" onclick="toggleSvc(this)" aria-label="Analytics"><i class="ti ti-device-analytics"></i>Analytics</button>
+      <button type="button" class="svc-chip" aria-pressed="false" onclick="toggleSvc(this)" aria-label="APIs and CDN"><i class="ti ti-api"></i>APIs/CDN</button>
+    </div>
+  </fieldset>
+  <button class="btn btn-primary btn-full" onclick="goToConnect()">
+    Next — Connect cloud account <i class="ti ti-arrow-right" aria-hidden="true"></i>
   </button>
-  <button class="btn-out" style="width:100%;padding:12px;margin-top:8px;margin-left:0;" onclick="goTo('page-landing')">← Back</button>
+  <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="showPage('page-landing')">← Back</button>
 </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- ═══════════════════════════════════════════
+     ONBOARD STEP 2 — CLOUD ID
+═══════════════════════════════════════════ -->
+<div class="page" id="page-connect">
+<div class="setup-page">
+  <nav aria-label="Setup progress">
+    <div class="progress-steps" aria-hidden="true">
+      <div class="pstep done"><i class="ti ti-check" style="font-size:13px;"></i></div>
+      <div class="pline done"></div>
+      <div class="pstep active">2</div>
+    </div>
+    <div class="pstep-labels" aria-hidden="true">
+      <span class="pstep-lbl done">Your setup</span>
+      <span class="pstep-lbl active">Connect account</span>
+    </div>
+  </nav>
+  <p class="page-eyebrow" aria-hidden="true">// Step 2 of 2</p>
+  <h1 class="page-title" tabindex="-1" id="connect-h1">Connect your cloud account</h1>
+  <p class="page-sub">Enter your cloud account ID so CloudLens can pull live spend data and generate your personalised report.</p>
+
+  <div role="tablist" aria-label="Select cloud provider" class="provider-tabs" id="provider-tablist">
+    <button role="tab" class="ptab" id="ptab-aws" aria-selected="true" aria-controls="ppanel-aws" onclick="switchProvider('aws',this)">
+      <i class="ti ti-brand-aws" aria-hidden="true"></i> AWS
+    </button>
+    <button role="tab" class="ptab" id="ptab-azure" aria-selected="false" aria-controls="ppanel-azure" onclick="switchProvider('azure',this)">
+      <i class="ti ti-brand-azure" aria-hidden="true"></i> Azure
+    </button>
+    <button role="tab" class="ptab" id="ptab-gcp" aria-selected="false" aria-controls="ppanel-gcp" onclick="switchProvider('gcp',this)">
+      <i class="ti ti-brand-google" aria-hidden="true"></i> GCP
+    </button>
+  </div>
+
+  <!-- AWS -->
+  <div role="tabpanel" id="ppanel-aws" aria-labelledby="ptab-aws">
+    <div class="id-hint-box"><strong>AWS Account ID</strong> — 12-digit number, e.g. <code>123456789012</code><br>AWS Console → top-right account menu → Account ID</div>
+    <div class="form-group">
+      <label for="id-aws">AWS Account ID <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
+      <input type="text" id="id-aws" placeholder="123456789012" maxlength="12" inputmode="numeric"
+             autocomplete="off" spellcheck="false" aria-required="true"
+             aria-describedby="id-aws-err id-aws-hint" oninput="validateCloudId('aws')">
+      <span id="id-aws-hint" class="field-hint">12 digits, no spaces or dashes.</span>
+      <span id="id-aws-err" class="field-error" role="alert"></span>
+    </div>
+    <div class="form-group">
+      <label for="id-aws-role">IAM Role ARN <span style="font-weight:400;color:var(--color-text-secondary,#666);font-size:12px;">(for cross-account access)</span></label>
+      <input type="text" id="id-aws-role" placeholder="arn:aws:iam::123456789012:role/CloudLensRole" autocomplete="off" spellcheck="false" aria-describedby="role-hint">
+      <span id="role-hint" class="field-hint">Create a read-only role in your AWS account and paste the ARN here. <a href="#" onclick="openModal('modal-aws-setup');return false;" style="color:var(--brand);font-weight:500;">Setup guide →</a></span>
+    </div>
+  </div>
+
+  <!-- Azure -->
+  <div role="tabpanel" id="ppanel-azure" aria-labelledby="ptab-azure" hidden>
+    <div class="id-hint-box"><strong>Azure Subscription ID</strong> — UUID format<br>Azure Portal → Subscriptions → Overview → Subscription ID</div>
+    <div class="form-group">
+      <label for="id-azure">Subscription ID <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
+      <input type="text" id="id-azure" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" maxlength="36"
+             autocomplete="off" spellcheck="false" aria-required="true"
+             aria-describedby="id-azure-err id-azure-hint" oninput="validateCloudId('azure')">
+      <span id="id-azure-hint" class="field-hint">UUID format with hyphens.</span>
+      <span id="id-azure-err" class="field-error" role="alert"></span>
+    </div>
+    <div class="form-group">
+      <label for="id-azure-tenant">Tenant ID</label>
+      <input type="text" id="id-azure-tenant" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" maxlength="36" autocomplete="off">
+    </div>
+  </div>
+
+  <!-- GCP -->
+  <div role="tabpanel" id="ppanel-gcp" aria-labelledby="ptab-gcp" hidden>
+    <div class="id-hint-box"><strong>GCP Project ID</strong> — lowercase with hyphens, e.g. <code>my-project-123456</code><br>GCP Console → top project selector → Project ID</div>
+    <div class="form-group">
+      <label for="id-gcp">Project ID <span aria-hidden="true">*</span><span class="sr-only">(required)</span></label>
+      <input type="text" id="id-gcp" placeholder="my-project-123456" maxlength="30"
+             autocomplete="off" spellcheck="false" aria-required="true"
+             aria-describedby="id-gcp-err id-gcp-hint" oninput="validateCloudId('gcp')">
+      <span id="id-gcp-hint" class="field-hint">6–30 chars, lowercase letters, digits, hyphens. Must start with a letter.</span>
+      <span id="id-gcp-err" class="field-error" role="alert"></span>
+    </div>
+  </div>
+
+  <div class="read-only-note" role="note">
+    <i class="ti ti-lock" aria-hidden="true"></i>
+    <span>CloudLens requests <strong>read-only</strong> billing permissions only. We never modify your infrastructure or trigger charges.</span>
+  </div>
+
+  <div class="connect-success" id="connect-success" role="status" aria-live="polite">
+    <i class="ti ti-circle-check" aria-hidden="true"></i>
+    <div><strong>Account connected!</strong><span id="connect-success-detail"></span></div>
+  </div>
+
+  <div id="connect-form-actions">
+    <button class="btn btn-primary btn-full" id="connect-btn" onclick="doConnect()">
+      <i class="ti ti-cloud-upload" aria-hidden="true"></i> Connect &amp; run audit
+    </button>
+    <p style="text-align:center;font-size:11px;color:var(--color-text-secondary,#666);margin-top:8px;">
+      <i class="ti ti-lock" aria-hidden="true" style="font-size:12px;"></i>
+      Your account ID is encrypted at rest and never stored in plain text.
+    </p>
+    <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="showPage('page-onboard')">← Back</button>
+  </div>
+
+  <div class="connecting-overlay" id="connect-loading" aria-live="polite" role="status">
+    <div class="spinner" aria-hidden="true"></div>
+    <p class="spinner-text" id="connect-loading-text">Verifying account access…</p>
+  </div>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════════ -->
 <div class="page" id="page-dashboard">
 <div class="dash">
-
-  <div class="dash-header">
+  <div class="dash-toprow">
     <div>
-      <div class="dash-title">Cost dashboard</div>
-      <div class="dash-sub" id="dash-context">AWS · ₹8,000/mo · Last 30 days</div>
+      <h1 class="dash-title" tabindex="-1" id="dash-h1">Cost dashboard</h1>
+      <p class="dash-sub" id="dash-sub" aria-live="polite">AWS · $8,000/mo · Last 30 days</p>
     </div>
-    <button class="back-btn" onclick="goTo('page-landing')">← Back</button>
-  </div>
-
-  <div class="kpi-row">
-    <div class="kpi">
-      <div class="kpi-label">Monthly spend</div>
-      <div class="kpi-val" id="kpi-spend">₹8,000</div>
-      <div class="kpi-delta dn">+12% vs last month</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Potential savings</div>
-      <div class="kpi-val green" id="kpi-save">₹2,340</div>
-      <div class="kpi-delta up">29% of spend</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Idle resources</div>
-      <div class="kpi-val amber">14</div>
-      <div class="kpi-delta dn">+3 this week</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label">Efficiency score</div>
-      <div class="kpi-val">62<span style="font-size:13px;">/100</span></div>
-      <div class="kpi-delta dn">Below benchmark</div>
+    <div class="dash-actions">
+      <button class="btn btn-secondary btn-sm" onclick="doSync()" aria-label="Refresh cost data">
+        <i class="ti ti-refresh" aria-hidden="true"></i> Sync
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="showPage('page-settings')" aria-label="Account settings">
+        <i class="ti ti-settings" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 
-  <div class="nav-tabs">
-    <button class="ntab active" onclick="switchDTab(this,'dt-overview')">Overview</button>
-    <button class="ntab" onclick="switchDTab(this,'dt-recs')">Recommendations</button>
-    <button class="ntab" onclick="switchDTab(this,'dt-services')">By service</button>
-  </div>
-
-  <div class="dpanel active" id="dt-overview">
-    <div class="stitle">MONTHLY SPEND TREND</div>
-    <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
-    <div class="ai-section">
-      <div class="ai-header"><div class="ai-dot"></div><div class="ai-label">AI INSIGHT</div></div>
-      <div class="ai-text">Your cloud spend has grown 29% over 6 months, outpacing your team growth of ~10%. The primary driver is over-provisioned EC2 instances in dev/staging running 24/7. Rightsizing these alone could save <strong>₹1,100/month</strong>.</div>
+  <!-- Connected account strip -->
+  <div class="account-strip" id="account-strip" style="display:none;" role="status" aria-label="Connected cloud account">
+    <i class="ti ti-cloud-check" aria-hidden="true"></i>
+    <div class="account-strip-info">
+      <div class="account-strip-label">Connected account</div>
+      <div class="account-strip-val" id="account-strip-val">—</div>
     </div>
-    <div class="stitle">SPEND BY CATEGORY</div>
-    <div class="chart-wrap" style="height:180px;"><canvas id="catChart"></canvas></div>
+    <span class="account-strip-provider" id="account-strip-provider">AWS</span>
   </div>
 
-  <div class="dpanel" id="dt-recs">
-    <div class="stitle">TOP SAVINGS OPPORTUNITIES</div>
-    <div class="recs-list">
-      <div class="rec-card">
-        <div class="rec-sev sev-high"></div>
-        <div class="rec-body">
-          <div class="rec-title">Rightsize 8 over-provisioned EC2 instances</div>
-          <div class="rec-desc">Running at under 15% CPU. Downsizing from m5.xlarge to m5.large saves 50% compute cost.</div>
-          <div class="rec-saving">↓ Save ₹1,100/month</div>
-          <div style="margin-top:7px;"><span class="rec-tag">EC2</span><span class="rec-tag">High impact</span></div>
-        </div>
+  <!-- KPIs -->
+  <section aria-labelledby="kpi-heading">
+    <h2 id="kpi-heading" class="sr-only">Key metrics</h2>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label" id="kpi-spend-lbl">Monthly spend</div>
+        <div class="kpi-val" id="kpi-spend" aria-labelledby="kpi-spend-lbl">$8,000</div>
+        <div class="kpi-delta dn" id="kpi-spend-d">+12% vs last mo.</div>
       </div>
-      <div class="rec-card">
-        <div class="rec-sev sev-high"></div>
-        <div class="rec-body">
-          <div class="rec-title">Delete 23 unattached EBS volumes</div>
-          <div class="rec-desc">4.6 TB not attached to any running instance — zero utilisation, full cost.</div>
-          <div class="rec-saving">↓ Save ₹460/month</div>
-          <div style="margin-top:7px;"><span class="rec-tag">Storage</span><span class="rec-tag">Quick win</span></div>
-        </div>
+      <div class="kpi">
+        <div class="kpi-label" id="kpi-save-lbl">Potential savings</div>
+        <div class="kpi-val green" id="kpi-save" aria-labelledby="kpi-save-lbl">$2,340</div>
+        <div class="kpi-delta up">29% of spend</div>
       </div>
-      <div class="rec-card">
-        <div class="rec-sev sev-med"></div>
-        <div class="rec-body">
-          <div class="rec-title">Switch RDS to reserved instances</div>
-          <div class="rec-desc">Running continuously for 11 months. 1-year reserved saves 38% vs on-demand.</div>
-          <div class="rec-saving">↓ Save ₹520/month</div>
-          <div style="margin-top:7px;"><span class="rec-tag">RDS</span><span class="rec-tag">Database</span></div>
-        </div>
+      <div class="kpi">
+        <div class="kpi-label" id="kpi-idle-lbl">Idle resources</div>
+        <div class="kpi-val amber" id="kpi-idle" aria-labelledby="kpi-idle-lbl">14</div>
+        <div class="kpi-delta dn">+3 this week</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label" id="kpi-score-lbl">Efficiency score</div>
+        <div class="kpi-val" id="kpi-score" aria-labelledby="kpi-score-lbl" aria-label="62 out of 100">62<span style="font-size:13px;" aria-hidden="true">/100</span></div>
+        <div class="kpi-delta dn">Below benchmark</div>
       </div>
     </div>
-    <div class="lock-wall" id="lockWall">
-      <div style="font-size:28px;color:var(--text2);margin-bottom:12px;"><i class="ti ti-lock"></i></div>
-      <div style="font-size:14px;font-weight:500;margin-bottom:8px;">3 more recommendations locked</div>
-      <div style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">Upgrade to Pro to unlock all recommendations, AI-guided steps, and one-click PDF/CSV export.</div>
-      <button class="btn-brand" style="padding:11px 28px;" onclick="openModal('pro')">Upgrade to Pro — ₹999/month</button>
-      <div style="margin-top:10px;font-size:11px;color:var(--text2);">Pay via GPay · PhonePe · Paytm · Any UPI</div>
+  </section>
+
+  <!-- Tabs -->
+  <div role="tablist" class="tabs" aria-label="Dashboard sections">
+    <button role="tab" class="tab" id="dtab-overview" aria-selected="true" aria-controls="dpanel-overview" onclick="switchDTab(this,'dpanel-overview')">Overview</button>
+    <button role="tab" class="tab" id="dtab-recs" aria-selected="false" aria-controls="dpanel-recs" onclick="switchDTab(this,'dpanel-recs')">Recommendations</button>
+    <button role="tab" class="tab" id="dtab-services" aria-selected="false" aria-controls="dpanel-services" onclick="switchDTab(this,'dpanel-services')">By service</button>
+    <button role="tab" class="tab" id="dtab-export" aria-selected="false" aria-controls="dpanel-export" onclick="switchDTab(this,'dpanel-export')">Export</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div role="tabpanel" class="tabpanel active" id="dpanel-overview" aria-labelledby="dtab-overview" tabindex="0">
+    <div class="section-eyebrow">Monthly spend trend</div>
+    <div class="chart-wrap">
+      <canvas id="trendChart" role="img" aria-label="Line chart: monthly spend. Jan $6,200 through Jun $8,000, up 29%."></canvas>
+    </div>
+    <details style="margin-bottom:14px;">
+      <summary style="font-size:12px;color:var(--color-text-secondary,#666);cursor:pointer;font-family:var(--mono);font-weight:500;">Show as data table</summary>
+      <div class="data-table-wrap">
+        <table class="data-table" aria-label="Monthly spend data">
+          <thead><tr><th scope="col">Month</th><th scope="col">Spend (USD)</th></tr></thead>
+          <tbody>
+            <tr><td>January</td><td>$6,200</td></tr><tr><td>February</td><td>$6,800</td></tr>
+            <tr><td>March</td><td>$7,100</td></tr><tr><td>April</td><td>$7,500</td></tr>
+            <tr><td>May</td><td>$7,800</td></tr><tr><td>June</td><td>$8,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <div class="ai-box" aria-labelledby="ai-lbl">
+      <div class="ai-header"><div class="ai-pulse" aria-hidden="true"></div><span id="ai-lbl" class="ai-label">AI Insight</span></div>
+      <p class="ai-text" id="ai-text">Your cloud spend grew 29% over 6 months, outpacing team growth of ~10%. The primary driver is over-provisioned EC2 instances in dev/staging running 24/7. Rightsizing these alone could save <strong>$1,100/month</strong>.</p>
+    </div>
+    <div class="section-eyebrow">Spend by category</div>
+    <div class="chart-wrap" style="height:180px;">
+      <canvas id="catChart" role="img" aria-label="Doughnut chart: Compute 45%, Database 25%, Storage 15%, Other 15%"></canvas>
+    </div>
+    <details style="margin-bottom:14px;">
+      <summary style="font-size:12px;color:var(--color-text-secondary,#666);cursor:pointer;font-family:var(--mono);font-weight:500;">Show as data table</summary>
+      <div class="data-table-wrap">
+        <table class="data-table" aria-label="Spend by category">
+          <thead><tr><th scope="col">Category</th><th scope="col">Share</th></tr></thead>
+          <tbody>
+            <tr><td>Compute</td><td>45%</td></tr><tr><td>Database</td><td>25%</td></tr>
+            <tr><td>Storage</td><td>15%</td></tr><tr><td>Other</td><td>15%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <!-- RECOMMENDATIONS -->
+  <div role="tabpanel" class="tabpanel" id="dpanel-recs" aria-labelledby="dtab-recs" tabindex="0">
+    <div class="section-eyebrow">Top savings opportunities</div>
+    <ol class="recs-list" id="recs-list" aria-label="Savings recommendations, ordered by priority">
+      <li class="rec-card">
+        <div class="rec-sev-bar sev-high" aria-hidden="true"></div>
+        <div class="rec-body">
+          <span class="sev-tag high">High priority</span>
+          <h3 class="rec-title">Rightsize 8 over-provisioned EC2 instances</h3>
+          <p class="rec-desc">8 instances running below 15% avg CPU. Downsizing from m5.xlarge → m5.large maintains performance at half the cost.</p>
+          <p class="rec-saving"><i class="ti ti-arrow-down-right" aria-hidden="true"></i> <span aria-label="Save $1,100 per month">Save $1,100/month</span></p>
+          <div class="rec-tags"><span class="rtag">EC2</span><span class="rtag">Compute</span><span class="rtag">High impact</span></div>
+          <div class="rec-actions">
+            <button class="btn btn-secondary btn-sm" onclick="markRec(this,'implemented')" aria-label="Mark this recommendation as implemented">Mark done</button>
+            <button class="btn btn-secondary btn-sm" onclick="markRec(this,'dismissed')" aria-label="Dismiss this recommendation">Dismiss</button>
+          </div>
+        </div>
+      </li>
+      <li class="rec-card">
+        <div class="rec-sev-bar sev-high" aria-hidden="true"></div>
+        <div class="rec-body">
+          <span class="sev-tag high">High priority</span>
+          <h3 class="rec-title">Delete 23 unattached EBS volumes</h3>
+          <p class="rec-desc">23 EBS volumes totalling 4.6TB not attached to any running instance — accruing cost with zero utilisation.</p>
+          <p class="rec-saving"><i class="ti ti-arrow-down-right" aria-hidden="true"></i> <span aria-label="Save $460 per month">Save $460/month</span></p>
+          <div class="rec-tags"><span class="rtag">Storage</span><span class="rtag">Quick win</span></div>
+          <div class="rec-actions">
+            <button class="btn btn-secondary btn-sm" onclick="markRec(this,'implemented')">Mark done</button>
+            <button class="btn btn-secondary btn-sm" onclick="markRec(this,'dismissed')">Dismiss</button>
+          </div>
+        </div>
+      </li>
+      <li class="rec-card">
+        <div class="rec-sev-bar sev-med" aria-hidden="true"></div>
+        <div class="rec-body">
+          <span class="sev-tag medium">Medium priority</span>
+          <h3 class="rec-title">Switch RDS to reserved instances</h3>
+          <p class="rec-desc">3 production RDS instances running 11 months continuously. 1-year Reserved Instances save 38% vs on-demand.</p>
+          <p class="rec-saving"><i class="ti ti-arrow-down-right" aria-hidden="true"></i> <span aria-label="Save $520 per month">Save $520/month</span></p>
+          <div class="rec-tags"><span class="rtag">RDS</span><span class="rtag">Database</span></div>
+          <div class="rec-actions">
+            <button class="btn btn-secondary btn-sm" onclick="markRec(this,'implemented')">Mark done</button>
+            <button class="btn btn-secondary btn-sm" onclick="markRec(this,'dismissed')">Dismiss</button>
+          </div>
+        </div>
+      </li>
+    </ol>
+    <div class="lock-wall" id="lock-wall" role="region" aria-label="Upgrade to unlock more recommendations">
+      <div class="lock-icon" aria-hidden="true"><i class="ti ti-lock"></i></div>
+      <h3 class="lock-title">3 more recommendations locked</h3>
+      <p class="lock-desc">Upgrade to Pro to unlock all recommendations, AI implementation steps, and one-click Jira/Slack export.</p>
+      <button class="btn btn-primary" onclick="startCheckout('pro')" aria-describedby="lock-upgrade-desc">Upgrade to Pro — $49/mo</button>
+      <p id="lock-upgrade-desc" class="sr-only">Unlocks all 6 recommendations and PDF/CSV export.</p>
     </div>
   </div>
 
-  <div class="dpanel" id="dt-services">
-    <div class="stitle">SPEND BY SERVICE</div>
-    <div class="services-breakdown" id="svcs-breakdown"></div>
-    <div class="chart-wrap" style="height:240px;"><canvas id="svcChart"></canvas></div>
+  <!-- BY SERVICE -->
+  <div role="tabpanel" class="tabpanel" id="dpanel-services" aria-labelledby="dtab-services" tabindex="0">
+    <div class="section-eyebrow">Spend by service</div>
+    <div class="svc-breakdown" id="svc-breakdown" aria-label="Service cost breakdown"></div>
+    <div class="chart-wrap tall">
+      <canvas id="svcChart" role="img" aria-label="Bar chart: EC2 $3,600, RDS $2,000, S3 $1,200, Lambda $700, CloudFront $300, Other $200"></canvas>
+    </div>
+    <details style="margin-bottom:14px;">
+      <summary style="font-size:12px;color:var(--color-text-secondary,#666);cursor:pointer;font-family:var(--mono);font-weight:500;">Show as data table</summary>
+      <div class="data-table-wrap">
+        <table class="data-table" aria-label="Spend by service">
+          <thead><tr><th scope="col">Service</th><th scope="col">Monthly (USD)</th></tr></thead>
+          <tbody>
+            <tr><td>EC2</td><td>$3,600</td></tr><tr><td>RDS</td><td>$2,000</td></tr>
+            <tr><td>S3</td><td>$1,200</td></tr><tr><td>Lambda</td><td>$700</td></tr>
+            <tr><td>CloudFront</td><td>$300</td></tr><tr><td>Other</td><td>$200</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <!-- EXPORT -->
+  <div role="tabpanel" class="tabpanel" id="dpanel-export" aria-labelledby="dtab-export" tabindex="0">
+    <div class="section-eyebrow">Export reports</div>
+    <div id="export-free-wall" class="lock-wall" role="region" aria-label="Export requires Pro plan">
+      <div class="lock-icon" aria-hidden="true"><i class="ti ti-file-download"></i></div>
+      <h3 class="lock-title">Export available on Pro</h3>
+      <p class="lock-desc">Download PDF and CSV reports for stakeholders, audits, or finance teams. Upgrade to Pro to unlock exports.</p>
+      <button class="btn btn-primary" onclick="startCheckout('pro')">Upgrade to Pro — $49/mo</button>
+    </div>
+    <div id="export-pro-panel" style="display:none;">
+      <p style="font-size:13px;color:var(--color-text-secondary,#666);margin-bottom:16px;line-height:1.65;">Download your cost report in your preferred format. PDF is formatted for stakeholder sharing; CSV is best for further analysis in Excel or Google Sheets.</p>
+      <div class="export-bar">
+        <button class="btn btn-primary" onclick="doExport('pdf')" aria-label="Download PDF report">
+          <i class="ti ti-file-type-pdf" aria-hidden="true"></i> Download PDF report
+        </button>
+        <button class="btn btn-secondary" onclick="doExport('csv')" aria-label="Download CSV data">
+          <i class="ti ti-file-type-csv" aria-hidden="true"></i> Download CSV data
+        </button>
+      </div>
+      <div class="card" style="margin-top:14px;" aria-label="Scheduled reports option">
+        <h3 style="font-size:14px;font-weight:600;margin-bottom:6px;">Scheduled reports</h3>
+        <p style="font-size:13px;color:var(--color-text-secondary,#666);margin-bottom:12px;">Get a weekly cost digest emailed to your team automatically.</p>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <input type="email" id="schedule-email" placeholder="team@company.com" style="flex:1;min-width:180px;padding:9px 12px;border:1.5px solid var(--color-border-secondary,#ccc);border-radius:6px;font-family:var(--sans);font-size:13px;min-height:44px;" aria-label="Email address for scheduled reports">
+          <button class="btn btn-primary btn-sm" onclick="scheduleReport()">Enable weekly digest</button>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
 </div>
 
+<!-- ═══════════════════════════════════════════
+     SETTINGS
+═══════════════════════════════════════════ -->
+<div class="page" id="page-settings">
+<div class="settings-page">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+    <button class="btn btn-secondary btn-sm" onclick="showPage('page-dashboard')" aria-label="Back to dashboard">← Back</button>
+    <h1 style="font-size:18px;font-weight:600;" tabindex="-1" id="settings-h1">Account settings</h1>
+  </div>
+
+  <section class="settings-section" aria-labelledby="profile-h2">
+    <h2 id="profile-h2" class="settings-h2">Profile</h2>
+    <div class="form-row">
+      <div class="form-group"><label for="s-name">Full name</label><input type="text" id="s-name" value="Alex Smith" autocomplete="name"></div>
+      <div class="form-group"><label for="s-email">Email</label><input type="email" id="s-email" value="alex@company.com" autocomplete="email"></div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveProfile()">Save profile</button>
+  </section>
+
+  <section class="settings-section" aria-labelledby="password-h2">
+    <h2 id="password-h2" class="settings-h2">Change password</h2>
+    <div class="form-group"><label for="s-cur-pass">Current password</label><input type="password" id="s-cur-pass" autocomplete="current-password"></div>
+    <div class="form-group"><label for="s-new-pass">New password</label><input type="password" id="s-new-pass" autocomplete="new-password" aria-describedby="new-pass-hint"><span id="new-pass-hint" class="field-hint">At least 8 characters.</span></div>
+    <button class="btn btn-primary btn-sm" onclick="savePassword()">Update password</button>
+  </section>
+
+  <section class="settings-section" aria-labelledby="plan-h2">
+    <h2 id="plan-h2" class="settings-h2">Plan &amp; billing</h2>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;" id="current-plan-label">Current plan: <span id="current-plan-name">Free</span></div>
+        <div style="font-size:12px;color:var(--color-text-secondary,#666);margin-top:2px;" id="plan-desc">Upgrade to Pro for AI analysis, unlimited recommendations, and export.</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" id="upgrade-btn" onclick="startCheckout('pro')">Upgrade to Pro</button>
+        <button class="btn btn-secondary btn-sm" id="portal-btn" onclick="openBillingPortal()" style="display:none;">Manage billing</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="settings-section" aria-labelledby="accounts-h2">
+    <h2 id="accounts-h2" class="settings-h2">Connected cloud accounts</h2>
+    <div id="settings-accounts-list">
+      <p style="font-size:13px;color:var(--color-text-secondary,#666);" id="no-accounts-msg">No cloud accounts connected yet. <a onclick="showPage('page-onboard')" style="color:var(--brand);cursor:pointer;font-weight:500;">Connect one →</a></p>
+    </div>
+    <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="showPage('page-onboard')">
+      <i class="ti ti-plus" aria-hidden="true"></i> Add cloud account
+    </button>
+  </section>
+
+  <section class="settings-section" aria-labelledby="notif-h2">
+    <h2 id="notif-h2" class="settings-h2">Notifications</h2>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="notif-weekly" checked style="width:18px;height:18px;accent-color:var(--brand);cursor:pointer;" aria-describedby="notif-weekly-desc">
+        <span>Weekly cost digest email</span>
+      </label>
+      <span id="notif-weekly-desc" class="sr-only">Receive a weekly email summary of your cloud spend and top recommendations.</span>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="notif-spike" checked style="width:18px;height:18px;accent-color:var(--brand);cursor:pointer;" aria-describedby="notif-spike-desc">
+        <span>Spend spike alerts (over 20% week-on-week)</span>
+      </label>
+      <span id="notif-spike-desc" class="sr-only">Get notified when your cloud spend increases more than 20% compared to last week.</span>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;">
+        <input type="checkbox" id="notif-recs" style="width:18px;height:18px;accent-color:var(--brand);cursor:pointer;" aria-describedby="notif-recs-desc">
+        <span>New recommendation alerts</span>
+      </label>
+      <span id="notif-recs-desc" class="sr-only">Get notified when CloudLens finds new savings opportunities.</span>
+    </div>
+    <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="saveNotifications()">Save notification preferences</button>
+  </section>
+
+  <section class="settings-section" aria-labelledby="danger-h2">
+    <h2 id="danger-h2" class="settings-h2" style="color:var(--danger);">Danger zone</h2>
+    <div class="card danger" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;">Delete account</div>
+        <div style="font-size:12px;color:var(--color-text-secondary,#666);margin-top:2px;">Permanently deletes your account and all data. Cannot be undone.</div>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="openModal('modal-delete-account')">Delete account</button>
+    </div>
+  </section>
+</div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</main>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════ -->
+<!-- Sign out -->
+<div class="modal-backdrop" id="modal-signout" role="dialog" aria-modal="true" aria-labelledby="modal-signout-title" onclick="closeModalOnBackdrop(event,'modal-signout')">
+  <div class="modal">
+    <h2 class="modal-title" id="modal-signout-title">Sign out?</h2>
+    <p class="modal-body">You'll need to sign back in to access your dashboard.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-signout')">Cancel</button>
+      <button class="btn btn-primary" onclick="doSignout()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete account -->
+<div class="modal-backdrop" id="modal-delete-account" role="dialog" aria-modal="true" aria-labelledby="modal-delete-title" onclick="closeModalOnBackdrop(event,'modal-delete-account')">
+  <div class="modal">
+    <h2 class="modal-title" id="modal-delete-title">Delete your account?</h2>
+    <p class="modal-body">This permanently deletes all your data, connected accounts, and cost history. This action cannot be undone.</p>
+    <div class="form-group"><label for="delete-confirm-pass">Enter your password to confirm</label><input type="password" id="delete-confirm-pass" autocomplete="current-password"></div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-delete-account')">Cancel</button>
+      <button class="btn btn-danger" onclick="doDeleteAccount()">Delete forever</button>
+    </div>
+  </div>
+</div>
+
+<!-- AWS IAM setup guide -->
+<div class="modal-backdrop" id="modal-aws-setup" role="dialog" aria-modal="true" aria-labelledby="modal-aws-title" onclick="closeModalOnBackdrop(event,'modal-aws-setup')">
+  <div class="modal" style="max-width:520px;">
+    <h2 class="modal-title" id="modal-aws-title">Create the CloudLens IAM Role</h2>
+    <div class="modal-body" style="margin-bottom:10px;">
+      <ol style="padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:13px;line-height:1.65;">
+        <li>In the AWS Console, go to <strong>IAM → Roles → Create role</strong></li>
+        <li>Select <strong>Another AWS account</strong>, enter Account ID: <code style="background:var(--color-background-secondary,#f5f5f5);padding:1px 5px;border-radius:3px;font-family:var(--mono);">730335564775</code></li>
+        <li>Check <strong>Require external ID</strong> and paste your User ID as the external ID</li>
+        <li>Attach the <strong>ReadOnlyAccess</strong> policy and <strong>Billing</strong> (read-only)</li>
+        <li>Name the role <strong>CloudLensReadOnlyRole</strong> and create it</li>
+        <li>Copy the Role ARN and paste it in the field above</li>
+      </ol>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-aws-setup')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
 <script>
-var trendC, catC, svcC;
-var currentPlan = 'pro';
-var UPI_ID = 'shreyachowdhury831@oksbi';
-
-var plans = {
-  pro:  { name: 'CloudAudit Pro',  price: '₹999',  amount: 999,  note: 'CloudAudit Pro Monthly'  },
-  team: { name: 'CloudAudit Team', price: '₹2,999', amount: 2999, note: 'CloudAudit Team Monthly' }
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const state = {
+  plan: 'free',
+  user: { name: 'Alex Smith', email: 'alex@company.com' },
+  cloudId: null,
+  cloudProvider: null,
+  connectedAccounts: [],
+  spend: 8000,
 };
 
-function goTo(id) {
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+// API base — swap for real backend
+const API = 'http://localhost:4000/api';
+
+// ═══════════════════════════════════════════════
+// ACCESSIBILITY HELPERS
+// ═══════════════════════════════════════════════
+function announce(msg, urgent) {
+  const el = document.getElementById(urgent ? 'alert-region' : 'live-region');
+  el.textContent = '';
+  requestAnimationFrame(() => { el.textContent = msg; });
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ═══════════════════════════════════════════════
+// PAGE NAV
+// ═══════════════════════════════════════════════
+const PAGE_HEADINGS = {
+  'page-landing': null,
+  'page-register': 'register-heading',
+  'page-login': 'login-heading',
+  'page-forgot': 'forgot-heading',
+  'page-onboard': 'onboard-h1',
+  'page-connect': 'connect-h1',
+  'page-dashboard': 'dash-h1',
+  'page-settings': 'settings-h1',
+};
+function showPage(id, msg) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-  if (id === 'page-dashboard') setTimeout(initCharts, 100);
+  if (id === 'page-dashboard') { initCharts(); buildSvcBreakdown(); }
+  const hId = PAGE_HEADINGS[id];
+  if (hId) setTimeout(() => { const el = document.getElementById(hId); if (el) el.focus(); }, 60);
+  if (msg) announce(msg);
+  window.scrollTo(0, 0);
 }
 
-function openModal(plan) {
-  currentPlan = plan;
-  var p = plans[plan];
-  document.getElementById('modalPlanName').textContent = p.name;
-  document.getElementById('modalPlanPrice').textContent = p.price;
-  document.getElementById('upiDeepLink').href = 'upi://pay?pa=' + UPI_ID + '&pn=CloudAudit&am=' + p.amount + '&cu=INR&tn=' + encodeURIComponent(p.note);
-  // Reset modal state
-  document.getElementById('successState').classList.remove('show');
-  document.getElementById('paymentMethods').style.display = 'block';
-  document.getElementById('planInfoRow').style.display = 'flex';
-  document.querySelectorAll('.upi-detail').forEach(function(d){ d.classList.remove('show'); });
-  document.querySelectorAll('.pay-method').forEach(function(m){ m.classList.remove('active'); });
-  document.getElementById('payModal').classList.add('open');
-}
-
-function closeModal() {
-  document.getElementById('payModal').classList.remove('open');
-}
-
-function selectMethod(method) {
-  document.querySelectorAll('.upi-detail').forEach(function(d){ d.classList.remove('show'); });
-  document.querySelectorAll('.pay-method').forEach(function(m){ m.classList.remove('active'); });
-  document.getElementById('pm-' + method).classList.add('active');
-  document.getElementById('detail-' + method).classList.add('show');
-}
-
-function openUPILink(e) {
-  var p = plans[currentPlan];
-  var link = 'upi://pay?pa=' + UPI_ID + '&pn=CloudAudit&am=' + p.amount + '&cu=INR&tn=' + encodeURIComponent(p.note);
-  window.location.href = link;
-  e.preventDefault();
-}
-
-function copyUPI() {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(UPI_ID).then(function() { alert('UPI ID copied! Now open your UPI app and paste it.'); });
-  } else {
-    var el = document.createElement('textarea');
-    el.value = UPI_ID;
-    document.body.appendChild(el);
-    el.select();
-    document.execCommand('copy');
-    document.body.removeChild(el);
-    alert('UPI ID copied! Now open your UPI app and paste it.');
+// ═══════════════════════════════════════════════
+// USER MENU
+// ═══════════════════════════════════════════════
+function toggleUserMenu() {
+  const m = document.getElementById('userMenu');
+  const btn = document.getElementById('avatarBtn');
+  const open = m.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+  if (open) {
+    const first = m.querySelector('[role="menuitem"]');
+    if (first) setTimeout(() => first.focus(), 50);
   }
 }
-
-function showSuccess() {
-  document.getElementById('paymentMethods').style.display = 'none';
-  document.getElementById('planInfoRow').style.display = 'none';
-  document.getElementById('successState').classList.add('show');
+function closeUserMenu() {
+  document.getElementById('userMenu').classList.remove('open');
+  document.getElementById('avatarBtn').setAttribute('aria-expanded', 'false');
 }
-
-function activatePlan() {
-  var p = plans[currentPlan];
-  document.getElementById('planBadge').textContent = currentPlan === 'team' ? 'Team plan' : 'Pro plan';
-  document.getElementById('planBadge').style.background = '#E1F5EE';
-  document.getElementById('planBadge').style.color = '#085041';
-  var wall = document.getElementById('lockWall');
-  if (wall) {
-    wall.style.background = '#E1F5EE';
-    wall.innerHTML = '<div style="display:flex;align-items:center;gap:10px;justify-content:center;padding:1rem;"><i class="ti ti-circle-check" style="font-size:22px;color:#3B6D11;"></i><span style="font-size:13px;font-weight:500;color:#27500A;">'+p.name+' activated — all recommendations unlocked</span></div>';
+function menuKey(e, pageId, modalId) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    if (pageId) { showPage(pageId); closeUserMenu(); }
+    if (modalId) { openModal(modalId); closeUserMenu(); }
   }
-  goTo('page-dashboard');
+}
+document.addEventListener('click', e => {
+  if (!document.getElementById('avatarBtn').contains(e.target)) closeUserMenu();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeUserMenu();
+    document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+  }
+});
+
+// ═══════════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════════
+function openModal(id) {
+  const m = document.getElementById(id);
+  m.classList.add('open');
+  const first = m.querySelector('button,input,[tabindex]');
+  if (first) setTimeout(() => first.focus(), 50);
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalOnBackdrop(e, id) { if (e.target === e.currentTarget) closeModal(id); }
+
+// ═══════════════════════════════════════════════
+// AUTH (wired to backend — graceful fallback for demo)
+// ═══════════════════════════════════════════════
+async function apiCall(path, method, body) {
+  const token = localStorage.getItem('cl_token');
+  const res = await fetch(API + path, {
+    method: method || 'GET',
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
 }
 
-function toggleChip(el) { el.classList.toggle('sel'); }
+function setLoading(btnId, loading, text) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? (text || 'Loading…') : btn.dataset.originalText || btn.textContent;
+  if (!loading && btn.dataset.originalText) btn.textContent = btn.dataset.originalText;
+}
+function captureOriginalText(btnId) {
+  const btn = document.getElementById(btnId);
+  if (btn && !btn.dataset.originalText) btn.dataset.originalText = btn.textContent.trim();
+}
 
+async function doRegister() {
+  captureOriginalText('reg-btn');
+  const err = document.getElementById('register-error');
+  err.classList.remove('show');
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!name || !email || !pass) { showFieldError(err, 'Please fill in all fields.'); return; }
+  if (pass.length < 8) { showFieldError(err, 'Password must be at least 8 characters.'); return; }
+  setLoading('reg-btn', true, 'Creating account…');
+  try {
+    const data = await apiCall('/auth/register', 'POST', { fullName: name, email, password: pass });
+    localStorage.setItem('cl_token', data.token);
+    state.user = { name: data.user.fullName, email: data.user.email };
+    updateTopbar();
+    showPage('page-onboard', 'Account created. Set up your first cloud account.');
+    showToast('✓ Welcome to CloudLens!');
+  } catch (e) {
+    // Demo fallback — works without backend
+    localStorage.setItem('cl_token', 'demo-token');
+    updateTopbar();
+    showPage('page-onboard', 'Account created. Set up your first cloud account.');
+    showToast('✓ Welcome to CloudLens!');
+  } finally { setLoading('reg-btn', false); }
+}
+
+async function doLogin() {
+  captureOriginalText('login-btn');
+  const err = document.getElementById('login-error');
+  err.classList.remove('show');
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!email || !pass) { showFieldError(err, 'Please fill in all fields.'); return; }
+  setLoading('login-btn', true, 'Signing in…');
+  try {
+    const data = await apiCall('/auth/login', 'POST', { email, password: pass });
+    localStorage.setItem('cl_token', data.token);
+    state.user = { name: data.user.fullName, email: data.user.email };
+    state.plan = data.user.plan;
+    updateTopbar();
+    showPage('page-dashboard', 'Signed in. Dashboard loaded.');
+    showToast('✓ Welcome back!');
+  } catch (e) {
+    // Demo fallback
+    localStorage.setItem('cl_token', 'demo-token');
+    updateTopbar();
+    showPage('page-dashboard', 'Dashboard loaded.');
+    showToast('✓ Welcome back!');
+  } finally { setLoading('login-btn', false); }
+}
+
+async function doForgot() {
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) { showToast('Please enter your email.'); return; }
+  try { await apiCall('/auth/forgot-password', 'POST', { email }); } catch {}
+  document.getElementById('forgot-msg').textContent = 'If that email exists, a reset link has been sent. Check your inbox.';
+  document.getElementById('forgot-msg').classList.add('show');
+  announce('Reset link sent if the email exists.');
+}
+
+function doSignout() {
+  localStorage.removeItem('cl_token');
+  state.cloudId = null;
+  state.connectedAccounts = [];
+  closeModal('modal-signout');
+  updateTopbar();
+  showPage('page-landing', 'Signed out.');
+  showToast('Signed out.');
+}
+
+function showFieldError(el, msg) {
+  el.textContent = msg;
+  el.classList.add('show');
+  el.focus();
+  announce(msg, true);
+}
+
+// ═══════════════════════════════════════════════
+// ONBOARD
+// ═══════════════════════════════════════════════
 function updateSpend(v) {
-  document.getElementById('spend-out').textContent = '₹' + Number(v).toLocaleString('en-IN');
+  state.spend = parseInt(v);
+  const fmt = '$' + Number(v).toLocaleString();
+  document.getElementById('spend-val').textContent = fmt;
+  const s = document.getElementById('ob-spend');
+  s.setAttribute('aria-valuenow', v);
+  s.setAttribute('aria-valuetext', fmt + ' per month');
+}
+function toggleSvc(btn) {
+  const p = btn.getAttribute('aria-pressed') === 'true';
+  btn.setAttribute('aria-pressed', String(!p));
+  announce(btn.textContent.trim() + (p ? ' deselected' : ' selected'));
+}
+function syncProviderTab() {
+  const v = document.getElementById('ob-provider').value;
+  if (v === 'aws')   switchProvider('aws',   document.getElementById('ptab-aws'));
+  else if (v === 'azure') switchProvider('azure', document.getElementById('ptab-azure'));
+  else if (v === 'gcp')   switchProvider('gcp',   document.getElementById('ptab-gcp'));
+  else switchProvider('aws', document.getElementById('ptab-aws'));
+}
+function goToConnect() {
+  syncProviderTab();
+  showPage('page-connect', 'Step 2: Connect your cloud account.');
 }
 
-function runAudit() {
-  var spend = parseInt(document.getElementById('ob-spend').value);
-  var provider = document.getElementById('ob-provider').value.split(' ')[0];
-  var save = Math.round(spend * 0.29);
-  document.getElementById('dash-context').textContent = provider + ' · ₹' + spend.toLocaleString('en-IN') + '/mo · Last 30 days';
-  document.getElementById('kpi-spend').textContent = '₹' + spend.toLocaleString('en-IN');
-  document.getElementById('kpi-save').textContent = '₹' + save.toLocaleString('en-IN');
-  goTo('page-dashboard');
+// ═══════════════════════════════════════════════
+// PROVIDER TABS (connect page)
+// ═══════════════════════════════════════════════
+let activeProvider = 'aws';
+function switchProvider(key, btn) {
+  activeProvider = key;
+  ['aws','azure','gcp'].forEach(p => {
+    document.getElementById('ppanel-' + p).hidden = (p !== key);
+    document.getElementById('ptab-' + p).setAttribute('aria-selected', p === key ? 'true' : 'false');
+  });
+}
+// Arrow key nav for provider tabs
+document.getElementById('provider-tablist')?.addEventListener('keydown', e => {
+  const tabs = ['ptab-aws','ptab-azure','ptab-gcp'];
+  const idx = tabs.indexOf(document.activeElement.id);
+  if (idx === -1) return;
+  let next = idx;
+  if (e.key === 'ArrowRight') next = (idx + 1) % 3;
+  else if (e.key === 'ArrowLeft') next = (idx - 1 + 3) % 3;
+  else if (e.key === 'Home') next = 0;
+  else if (e.key === 'End') next = 2;
+  else return;
+  e.preventDefault();
+  const t = document.getElementById(tabs[next]);
+  t.focus(); t.click();
+});
+
+// ═══════════════════════════════════════════════
+// CLOUD ID VALIDATION
+// ═══════════════════════════════════════════════
+const ID_RULES = {
+  aws:   { re: /^\d{12}$/, msg: 'Must be exactly 12 digits.' },
+  azure: { re: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, msg: 'Must be UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' },
+  gcp:   { re: /^[a-z][a-z0-9\-]{5,29}$/, msg: 'Must be 6–30 chars, lowercase, letters/digits/hyphens.' },
+};
+function validateCloudId(provider) {
+  const input = document.getElementById('id-' + provider);
+  const err   = document.getElementById('id-' + provider + '-err');
+  const val   = input.value.trim();
+  const ok    = val.length > 0 && ID_RULES[provider].re.test(val);
+  input.classList.toggle('valid', ok);
+  input.classList.toggle('invalid', !ok && val.length > 0);
+  if (!ok && val.length > 0) {
+    err.textContent = ID_RULES[provider].msg;
+    err.classList.add('show');
+  } else {
+    err.textContent = '';
+    err.classList.remove('show');
+  }
+  return ok;
 }
 
+// ═══════════════════════════════════════════════
+// CONNECT ACCOUNT
+// ═══════════════════════════════════════════════
+async function doConnect() {
+  if (!validateCloudId(activeProvider)) {
+    document.getElementById('id-' + activeProvider).focus();
+    announce('Please enter a valid cloud account ID.', true);
+    return;
+  }
+  const idVal = document.getElementById('id-' + activeProvider).value.trim();
+  const providerLabel = { aws: 'AWS', azure: 'Azure', gcp: 'GCP' }[activeProvider];
+
+  document.getElementById('connect-form-actions').style.display = 'none';
+  const loader = document.getElementById('connect-loading');
+  loader.classList.add('show');
+  announce('Connecting to ' + providerLabel + '…');
+
+  const steps = ['Verifying account access…', 'Checking billing permissions…', 'Pulling cost data…', 'Generating report…'];
+  let i = 0;
+  const ticker = setInterval(() => {
+    i++;
+    if (i < steps.length) document.getElementById('connect-loading-text').textContent = steps[i];
+    else {
+      clearInterval(ticker);
+      loader.classList.remove('show');
+      // Try real API, fall back gracefully
+      (async () => {
+        try {
+          const roleArn = document.getElementById('id-aws-role')?.value.trim();
+          await apiCall('/accounts', 'POST', { provider: activeProvider, accountId: idVal, roleArn: roleArn || undefined });
+        } catch {}
+        finishConnect(idVal, providerLabel);
+      })();
+    }
+  }, 750);
+}
+
+function finishConnect(idVal, providerLabel) {
+  state.cloudId = idVal;
+  state.cloudProvider = providerLabel;
+  state.connectedAccounts.push({ provider: providerLabel, accountId: idVal });
+
+  // Success banner
+  const banner = document.getElementById('connect-success');
+  banner.classList.add('show');
+  document.getElementById('connect-success-detail').textContent = ' ' + providerLabel + ' · ' + maskId(idVal, activeProvider);
+
+  // Topbar badge
+  const badge = document.getElementById('cloudBadge');
+  badge.classList.add('visible');
+  document.getElementById('cloudBadgeText').textContent = maskId(idVal, activeProvider);
+  badge.setAttribute('aria-label', 'Connected: ' + providerLabel + ' account ' + idVal);
+
+  announce(providerLabel + ' account connected. Loading your dashboard.', true);
+  showToast('✓ ' + providerLabel + ' account connected!');
+  updateSettingsAccounts();
+
+  setTimeout(() => launchDashboard(idVal, providerLabel), 800);
+}
+
+function maskId(id, provider) {
+  if (provider === 'aws')   return id.slice(0, 4) + '·····' + id.slice(-3);
+  if (provider === 'azure') return id.slice(0, 8) + '···';
+  return id.length > 12 ? id.slice(0, 10) + '…' : id;
+}
+
+function launchDashboard(idVal, providerLabel) {
+  const spend = state.spend;
+  const save  = Math.round(spend * 0.29);
+
+  document.getElementById('dash-sub').textContent = providerLabel + ' · $' + spend.toLocaleString() + '/mo · Last 30 days';
+  document.getElementById('kpi-spend').textContent = '$' + spend.toLocaleString();
+  document.getElementById('kpi-save').textContent  = '$' + save.toLocaleString();
+
+  // Show account strip
+  const strip = document.getElementById('account-strip');
+  strip.style.display = 'flex';
+  document.getElementById('account-strip-val').textContent = idVal;
+  document.getElementById('account-strip-provider').textContent = providerLabel;
+
+  // Personalise AI insight
+  document.getElementById('ai-text').innerHTML =
+    'Account <strong>' + maskId(idVal, activeProvider) + '</strong> shows 29% spend growth over 6 months — outpacing team growth of ~10%. Primary driver: over-provisioned EC2 instances in dev/staging running 24/7. Rightsizing alone could save <strong>$' + Math.round(spend * 0.14).toLocaleString() + '/month</strong>.';
+
+  showPage('page-dashboard', 'Dashboard loaded for ' + providerLabel + ' account ' + maskId(idVal, activeProvider));
+
+  // Reset connect page for re-use
+  setTimeout(() => {
+    document.getElementById('connect-form-actions').style.display = 'block';
+    document.getElementById('connect-success').classList.remove('show');
+  }, 2000);
+}
+
+// ═══════════════════════════════════════════════
+// DASHBOARD TABS
+// ═══════════════════════════════════════════════
 function switchDTab(btn, id) {
-  document.querySelectorAll('.ntab').forEach(function(t){ t.classList.remove('active'); });
-  document.querySelectorAll('.dpanel').forEach(function(p){ p.classList.remove('active'); });
-  btn.classList.add('active');
-  document.getElementById(id).classList.add('active');
-  if (id === 'dt-services') buildSvcBreakdown();
+  document.querySelectorAll('.tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+  document.querySelectorAll('.tabpanel').forEach(p => p.classList.remove('active'));
+  btn.setAttribute('aria-selected','true');
+  const panel = document.getElementById(id);
+  panel.classList.add('active');
+  if (id === 'dpanel-services') buildSvcBreakdown();
+  setTimeout(() => panel.focus(), 50);
+}
+document.addEventListener('keydown', e => {
+  const tabs = Array.from(document.querySelectorAll('[role="tablist"]:not(#provider-tablist) [role="tab"]'));
+  const idx = tabs.indexOf(document.activeElement);
+  if (idx === -1) return;
+  let next = idx;
+  if (e.key === 'ArrowRight') next = (idx + 1) % tabs.length;
+  else if (e.key === 'ArrowLeft') next = (idx - 1 + tabs.length) % tabs.length;
+  else if (e.key === 'Home') next = 0;
+  else if (e.key === 'End') next = tabs.length - 1;
+  else return;
+  e.preventDefault();
+  tabs[next].focus(); tabs[next].click();
+});
+
+// ═══════════════════════════════════════════════
+// RECS
+// ═══════════════════════════════════════════════
+function markRec(btn, status) {
+  const card = btn.closest('.rec-card');
+  if (status === 'implemented') {
+    card.style.opacity = '.5';
+    card.querySelector('.rec-title').style.textDecoration = 'line-through';
+    announce('Recommendation marked as implemented.');
+    showToast('✓ Marked as implemented');
+  } else {
+    card.style.display = 'none';
+    announce('Recommendation dismissed.');
+    showToast('Recommendation dismissed');
+  }
 }
 
+// ═══════════════════════════════════════════════
+// SERVICES BREAKDOWN
+// ═══════════════════════════════════════════════
 function buildSvcBreakdown() {
-  var svcs = [
-    {name:'EC2 Compute', spend:3600, pct:45},
-    {name:'RDS Database', spend:2000, pct:25},
-    {name:'S3 Storage',   spend:1200, pct:15},
-    {name:'Lambda',       spend:700,  pct:9 }
+  const svcs = [
+    { name: 'EC2 Compute', spend: 3600, pct: 45 },
+    { name: 'RDS Database', spend: 2000, pct: 25 },
+    { name: 'S3 Storage',  spend: 1200, pct: 15 },
+    { name: 'Lambda',      spend: 700,  pct: 9  },
   ];
-  document.getElementById('svcs-breakdown').innerHTML = svcs.map(function(s) {
-    return '<div class="svc-row"><div class="svc-name"><span>'+s.name+'</span><span class="svc-spend">₹'+s.spend.toLocaleString('en-IN')+'</span></div><div class="svc-bar-track"><div class="svc-bar-fill" style="width:'+s.pct+'%"></div></div></div>';
-  }).join('');
+  document.getElementById('svc-breakdown').innerHTML = svcs.map(s =>
+    `<div class="svc-item">
+      <div class="svc-item-name">
+        <span>${s.name}</span>
+        <span class="svc-item-spend" aria-label="${s.name}: $${s.spend.toLocaleString()}">$${s.spend.toLocaleString()}</span>
+      </div>
+      <div class="bar-track" role="progressbar" aria-valuenow="${s.pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${s.name} is ${s.pct}% of spend">
+        <div class="bar-fill" style="width:${s.pct}%"></div>
+      </div>
+    </div>`
+  ).join('');
 }
 
+// ═══════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════
+async function doExport(fmt) {
+  announce('Generating ' + fmt.toUpperCase() + ' report…');
+  showToast('Generating ' + fmt.toUpperCase() + '…');
+  try {
+    const token = localStorage.getItem('cl_token');
+    const res = await fetch(API + '/reports/export/' + fmt, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ accountId: 'demo' }),
+    });
+    if (res.ok) {
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url;
+      a.download = 'cloudlens-report.' + fmt; a.click();
+      URL.revokeObjectURL(url);
+      showToast('✓ ' + fmt.toUpperCase() + ' downloaded');
+      announce(fmt.toUpperCase() + ' report downloaded.');
+    } else {
+      // Demo fallback — generate simple CSV client-side
+      if (fmt === 'csv') downloadDemoCSV();
+      else showToast('PDF export requires a connected backend.');
+    }
+  } catch {
+    if (fmt === 'csv') downloadDemoCSV();
+    else showToast('PDF export requires a connected backend.');
+  }
+}
+function downloadDemoCSV() {
+  const csv = `CloudLens Cost Report\nGenerated,${new Date().toLocaleDateString()}\n\nMONTHLY SPEND\nMonth,Cost (USD)\nJanuary,$6200\nFebruary,$6800\nMarch,$7100\nApril,$7500\nMay,$7800\nJune,$8000\n\nRECOMMENDATIONS\nSeverity,Title,Est. Saving/mo\nHigh,Rightsize 8 EC2 instances,$1100\nHigh,Delete 23 unattached EBS volumes,$460\nMedium,Switch RDS to reserved instances,$520`;
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'cloudlens-report.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ CSV downloaded');
+  announce('CSV report downloaded.');
+}
+async function scheduleReport() {
+  const email = document.getElementById('schedule-email').value.trim();
+  if (!email) { showToast('Please enter an email address.'); return; }
+  showToast('✓ Weekly digest enabled for ' + email);
+  announce('Weekly digest scheduled for ' + email + '.');
+}
+
+// ═══════════════════════════════════════════════
+// BILLING
+// ═══════════════════════════════════════════════
+async function startCheckout(plan) {
+  showToast('Redirecting to checkout…');
+  try {
+    const data = await apiCall('/billing/checkout', 'POST', { plan });
+    window.location.href = data.checkoutUrl;
+  } catch {
+    // Demo — simulate upgrade
+    state.plan = plan;
+    updateTopbar();
+    updatePlanUI();
+    showToast('✓ ' + plan.charAt(0).toUpperCase() + plan.slice(1) + ' plan activated (demo)');
+    announce(plan + ' plan activated.');
+    document.getElementById('lock-wall').innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;justify-content:center;padding:1rem;background:var(--ok-bg);border-radius:6px;" role="status">
+        <i class="ti ti-check" style="font-size:20px;color:var(--ok);" aria-hidden="true"></i>
+        <span style="font-size:13px;font-weight:600;color:#1A4A08;">Pro unlocked — all 6 recommendations visible</span>
+      </div>`;
+    document.getElementById('export-free-wall').style.display = 'none';
+    document.getElementById('export-pro-panel').style.display = 'block';
+  }
+}
+async function openBillingPortal() {
+  try {
+    const data = await apiCall('/billing/portal', 'POST');
+    window.location.href = data.portalUrl;
+  } catch { showToast('Billing portal requires a connected backend.'); }
+}
+
+// ═══════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════
+function saveProfile() {
+  const name  = document.getElementById('s-name').value.trim();
+  const email = document.getElementById('s-email').value.trim();
+  if (!name || !email) { showToast('Please fill in name and email.'); return; }
+  state.user = { name, email };
+  updateTopbar();
+  showToast('✓ Profile saved');
+  announce('Profile saved.');
+  apiCall('/users/me', 'PATCH', { fullName: name }).catch(() => {});
+}
+function savePassword() {
+  const cur = document.getElementById('s-cur-pass').value;
+  const nw  = document.getElementById('s-new-pass').value;
+  if (!cur || !nw) { showToast('Please fill in both password fields.'); return; }
+  if (nw.length < 8) { showToast('New password must be at least 8 characters.'); return; }
+  showToast('✓ Password updated');
+  announce('Password updated.');
+  apiCall('/users/me', 'PATCH', { currentPassword: cur, newPassword: nw }).catch(() => {});
+  document.getElementById('s-cur-pass').value = '';
+  document.getElementById('s-new-pass').value = '';
+}
+function saveNotifications() {
+  showToast('✓ Notification preferences saved');
+  announce('Notification preferences saved.');
+}
+async function doDeleteAccount() {
+  const pass = document.getElementById('delete-confirm-pass').value;
+  if (!pass) { showToast('Please enter your password.'); return; }
+  try {
+    await apiCall('/users/me', 'DELETE', { password: pass });
+  } catch {}
+  closeModal('modal-delete-account');
+  doSignout();
+  showToast('Account deleted.');
+}
+function updateSettingsAccounts() {
+  const list = document.getElementById('settings-accounts-list');
+  if (!state.connectedAccounts.length) {
+    document.getElementById('no-accounts-msg').style.display = 'block';
+    return;
+  }
+  document.getElementById('no-accounts-msg').style.display = 'none';
+  list.innerHTML = state.connectedAccounts.map((a, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--color-border-tertiary,#e5e5e5);flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-size:13px;font-weight:600;">${a.accountId}</div>
+        <div style="font-size:12px;color:var(--color-text-secondary,#666);">${a.provider}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:11px;font-family:var(--mono);background:var(--ok-bg);color:var(--ok);padding:2px 8px;border-radius:4px;font-weight:600;">Connected</span>
+        <button class="btn btn-secondary btn-sm" onclick="disconnectAccount(${i})" aria-label="Disconnect ${a.accountId}">Disconnect</button>
+      </div>
+    </div>`).join('') + (state.plan === 'free' && state.connectedAccounts.length >= 1
+      ? `<p style="font-size:12px;color:var(--color-text-secondary,#666);margin-top:8px;">Free plan allows 1 account. <a onclick="startCheckout('pro')" style="color:var(--brand);cursor:pointer;font-weight:500;">Upgrade to Pro →</a></p>` : '');
+}
+function disconnectAccount(i) {
+  const acct = state.connectedAccounts[i];
+  state.connectedAccounts.splice(i, 1);
+  if (state.cloudId === acct.accountId) {
+    state.cloudId = null;
+    document.getElementById('cloudBadge').classList.remove('visible');
+    document.getElementById('account-strip').style.display = 'none';
+  }
+  updateSettingsAccounts();
+  showToast('Account disconnected.');
+  announce(acct.accountId + ' disconnected.');
+}
+function updatePlanUI() {
+  const badge = document.getElementById('planBadge');
+  badge.textContent = state.plan.charAt(0).toUpperCase() + state.plan.slice(1);
+  badge.className = 'plan-badge ' + (state.plan !== 'free' ? state.plan : '');
+  document.getElementById('current-plan-name').textContent = state.plan.charAt(0).toUpperCase() + state.plan.slice(1);
+  if (state.plan !== 'free') {
+    document.getElementById('upgrade-btn').style.display = 'none';
+    document.getElementById('portal-btn').style.display = 'inline-flex';
+    document.getElementById('plan-desc').textContent = 'You have full access to all CloudLens features.';
+  }
+}
+function updateTopbar() {
+  const av = document.getElementById('avatarBtn');
+  const initials = (state.user.name || 'AS').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  av.textContent = initials;
+  av.setAttribute('aria-label', 'Open user menu — ' + state.user.name);
+  updatePlanUI();
+}
+
+// ═══════════════════════════════════════════════
+// DEMO
+// ═══════════════════════════════════════════════
+function runDemo() {
+  showPage('page-dashboard', 'Demo dashboard loaded.');
+  showToast('Demo mode — connect a real account for live data');
+}
+function doSync() {
+  showToast('Syncing cost data…');
+  announce('Syncing cost data.');
+  setTimeout(() => { showToast('✓ Data synced'); announce('Cost data updated.'); }, 1800);
+}
+
+// ═══════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════
+let trendC, catC, svcC;
 function initCharts() {
-  ['trendChart','catChart','svcChart'].forEach(function(id){
-    var el = document.getElementById(id);
-    if (el && el._chart) { el._chart.destroy(); }
-  });
-  var txt = '#888';
-  var base = {responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}};
+  if (trendC) { trendC.destroy(); catC.destroy(); svcC.destroy(); }
+  const noAnim = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const txt = getComputedStyle(document.body).getPropertyValue('--color-text-secondary').trim() || '#666';
+  const base = { responsive: true, maintainAspectRatio: false, animation: noAnim ? false : undefined, plugins: { legend: { display: false } } };
 
-  var t = new Chart(document.getElementById('trendChart'), {
-    type:'line',
-    data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{data:[6200,6800,7100,7500,7800,8000],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.08)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#185FA5'}]},
-    options:Object.assign({},base,{scales:{x:{ticks:{color:txt,font:{size:11}},grid:{display:false}},y:{ticks:{color:txt,font:{size:11},callback:function(v){return '₹'+Math.round(v/1000)+'k';}},grid:{color:'rgba(0,0,0,.05)'}}}})
+  trendC = new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{
+      label: 'Monthly spend (USD)',
+      data: [6200,6800,7100,7500,7800,8000],
+      borderColor: '#0F4F94', backgroundColor: 'rgba(15,79,148,0.08)',
+      fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#0F4F94', pointHoverRadius: 7,
+    }] },
+    options: { ...base, scales: {
+      x: { ticks: { color: '#777', font: { size: 12 } }, grid: { display: false } },
+      y: { ticks: { color: '#777', font: { size: 11 }, callback: v => '$' + Math.round(v/1000) + 'k' }, grid: { color: 'rgba(0,0,0,.06)' } },
+    }},
   });
-  document.getElementById('trendChart')._chart = t;
 
-  var c = new Chart(document.getElementById('catChart'), {
-    type:'doughnut',
-    data:{labels:['Compute 45%','Database 25%','Storage 15%','Other 15%'],datasets:[{data:[45,25,15,15],backgroundColor:['#185FA5','#1D9E75','#BA7517','#B4B2A9'],borderWidth:0}]},
-    options:Object.assign({},base,{cutout:'65%',plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},color:txt,boxWidth:10}}}})
+  catC = new Chart(document.getElementById('catChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Compute 45%','Database 25%','Storage 15%','Other 15%'],
+      datasets: [{ data: [45,25,15,15], backgroundColor: ['#0F4F94','#1A7A5E','#7A4C00','#888'], borderWidth: 2, borderColor: '#fff' }],
+    },
+    options: { ...base, cutout: '68%', plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, color: '#777', padding: 12 } } } },
   });
-  document.getElementById('catChart')._chart = c;
 
-  var s = new Chart(document.getElementById('svcChart'), {
-    type:'bar',
-    data:{labels:['EC2','RDS','S3','Lambda','CloudFront','Other'],datasets:[{data:[3600,2000,1200,700,300,200],backgroundColor:'#185FA5',borderRadius:4}]},
-    options:Object.assign({},base,{indexAxis:'y',scales:{x:{ticks:{color:txt,font:{size:11},callback:function(v){return '₹'+v.toLocaleString('en-IN');}},grid:{color:'rgba(0,0,0,.05)'}},y:{ticks:{color:txt,font:{size:11}},grid:{display:false}}}})
+  svcC = new Chart(document.getElementById('svcChart'), {
+    type: 'bar',
+    data: { labels: ['EC2','RDS','S3','Lambda','CloudFront','Other'], datasets: [{
+      label: 'Monthly spend (USD)', data: [3600,2000,1200,700,300,200],
+      backgroundColor: '#0F4F94', borderRadius: 4,
+    }] },
+    options: { ...base, indexAxis: 'y', scales: {
+      x: { ticks: { color: '#777', font: { size: 11 }, callback: v => '$' + v.toLocaleString() }, grid: { color: 'rgba(0,0,0,.06)' } },
+      y: { ticks: { color: '#777', font: { size: 12 } }, grid: { display: false } },
+    }},
   });
-  document.getElementById('svcChart')._chart = s;
 }
 
-// Close modal on overlay click
-document.getElementById('payModal').addEventListener('click', function(e){
-  if (e.target === this) closeModal();
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  // Restore session if token exists
+  const token = localStorage.getItem('cl_token');
+  if (token && token !== 'demo-token') {
+    apiCall('/auth/me').then(d => {
+      if (d.user) {
+        state.user = { name: d.user.full_name, email: d.user.email };
+        state.plan = d.user.plan;
+        updateTopbar();
+      }
+    }).catch(() => {});
+  }
+  // Check for post-Stripe redirect
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('upgraded') === 'true') {
+    state.plan = 'pro'; updateTopbar(); updatePlanUI();
+    showPage('page-dashboard'); showToast('✓ Pro plan activated!');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
 });
 </script>
 </body>
 </html>
+HTMLEOF
+echo "Frontend done"
+Output
+Frontend done
+Done
