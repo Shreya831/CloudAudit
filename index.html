@@ -1122,13 +1122,26 @@ async function doRegister() {
   if (pass.length < 8) { showFieldError(err, 'Password must be at least 8 characters.'); return; }
   setLoading('reg-btn', true, 'Creating account…');
   try {
-    const data = await apiCall('/auth/register', 'POST', { fullName: name, email, password: pass });
-    localStorage.setItem('cl_token', data.token);
-    state.user = { name: data.user.fullName, email: data.user.email };
-    updateTopbar();
-    showPage('page-onboard', 'Account created. Set up your first cloud account.');
-    showToast('✓ Welcome to CloudLens!');
-  } catch (e) {
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: pass,
+    options: {
+      data: {
+        full_name: name
+      }
+    }
+  });
+
+  if (error) throw error;
+
+  showToast("✓ Account created! Check your email.");
+  showPage("page-onboard");
+
+} catch (e) {
+  showFieldError(err, e.message);
+} finally {
+  setLoading("reg-btn", false);
+}
     // Demo fallback — works without backend
     localStorage.setItem('cl_token', 'demo-token');
     updateTopbar();
