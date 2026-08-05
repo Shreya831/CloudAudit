@@ -1113,43 +1113,51 @@ function captureOriginalText(btnId) {
 
 async function doRegister() {
   captureOriginalText('reg-btn');
+
   const err = document.getElementById('register-error');
   err.classList.remove('show');
+
   const name = document.getElementById('reg-name').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pass = document.getElementById('reg-pass').value;
-  if (!name || !email || !pass) { showFieldError(err, 'Please fill in all fields.'); return; }
-  if (pass.length < 8) { showFieldError(err, 'Password must be at least 8 characters.'); return; }
+
+  if (!name || !email || !pass) {
+    showFieldError(err, 'Please fill in all fields.');
+    return;
+  }
+
+  if (pass.length < 8) {
+    showFieldError(err, 'Password must be at least 8 characters.');
+    return;
+  }
+
   setLoading('reg-btn', true, 'Creating account…');
+
   try {
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: pass,
-    options: {
-      data: {
-        full_name: name
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: pass,
+      options: {
+        data: {
+          full_name: name
+        }
       }
-    }
-  });
+    });
 
-  if (error) throw error;
+    if (error) throw error;
 
-  showToast("✓ Account created! Check your email.");
-  showPage("page-onboard");
+    showToast("✓ Account created! Check your email.");
+    showPage("page-onboard");
 
-} catch (e) {
-  showFieldError(err, e.message);
-} finally {
-  setLoading("reg-btn", false);
+  } catch (e) {
+    showFieldError(err, e.message);
+
+  } finally {
+    setLoading('reg-btn', false);
+  }
 }
     // Demo fallback — works without backend
-    localStorage.setItem('cl_token', 'demo-token');
-    updateTopbar();
-    showPage('page-onboard', 'Account created. Set up your first cloud account.');
-    showToast('✓ Welcome to CloudLens!');
-  } finally { setLoading('reg-btn', false); }
-}
-
+    
 async function doLogin() {
   captureOriginalText('login-btn');
   const err = document.getElementById('login-error');
