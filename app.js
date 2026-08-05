@@ -1,4 +1,3 @@
-
 const supabaseUrl = "https://giokargxqyjraxitbehi.supabase.co";
 const supabaseKey = "sb_publishable_LHNsm-LxWaN39CJa3_hcAA_jBdEgGrv";
 
@@ -34,3 +33,4 @@ async function doRegister() {
 
   alert("Account created successfully! Please check your email to verify your account.");
 }
+
