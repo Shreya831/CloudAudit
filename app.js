@@ -1,114 +1,136 @@
-// =========================
+// ===============================
+// CloudLens - Supabase Connection
+// ===============================
+
+console.log("App.js loaded");
+
+// Check if Supabase SDK is loaded
+console.log("window.supabase =", window.supabase);
+
+if (!window.supabase) {
+    alert("❌ Supabase library did not load.");
+
+    throw new Error("Supabase SDK not loaded");
+}
+
+// ===============================
 // Supabase Configuration
-// =========================
+// ===============================
+
 const supabaseUrl = "https://moznduclvknvvjcaehps.supabase.co";
-const supabaseKey = "sb_publishable_3HWPGbgcy2GuqglpOpAk0A_5niK2XWd";
+
+const supabaseKey =
+"sb_publishable_3HWPGbgcy2GuqglpOpAk0A_5niK2XWd";
 
 const supabase = window.supabase.createClient(
-  supabaseUrl,
-  supabaseKey
+    supabaseUrl,
+    supabaseKey
 );
 
-// Check if Supabase loaded correctly
-console.log("window.supabase =", window.supabase);
-console.log("supabase client =", supabase);
-console.log("supabase.auth =", supabase.auth);
+console.log("Supabase client =", supabase);
+console.log("Supabase auth =", supabase.auth);
 
-// =========================
-// Register User
-// =========================
+// ===============================
+// Register
+// ===============================
+
 async function doRegister() {
 
-  const name = document.getElementById("reg-name").value.trim();
-  const email = document.getElementById("reg-email").value.trim();
-  const password = document.getElementById("reg-pass").value;
+    const name = document.getElementById("reg-name").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const password = document.getElementById("reg-pass").value;
 
-  if (!name || !email || !password) {
-    alert("Please fill in all the fields.");
-    return;
-  }
-
-  if (password.length < 8) {
-    alert("Password must be at least 8 characters.");
-    return;
-  }
-
-  try {
-
-    const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-      options: {
-        data: {
-          full_name: name
-        }
-      }
-    });
-
-    if (error) {
-      throw error;
+    if (!name || !email || !password) {
+        alert("Please fill in all the fields.");
+        return;
     }
 
-    alert("✅ Account created successfully!");
+    if (password.length < 8) {
+        alert("Password must be at least 8 characters.");
+        return;
+    }
 
-    console.log(data);
+    try {
 
-  } catch (err) {
+        const { data, error } = await supabase.auth.signUp({
 
-    console.error(err);
-    alert(err.message);
+            email: email,
+            password: password,
 
-  }
+            options: {
+                data: {
+                    full_name: name
+                }
+            }
+
+        });
+
+        if (error) {
+            throw error;
+        }
+
+        console.log(data);
+
+        alert("✅ Registration successful!");
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        alert(err.message);
+
+    }
 
 }
 
-// =========================
-// Login User
-// =========================
+// ===============================
+// Login
+// ===============================
+
 async function doLogin() {
 
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-pass").value;
+    const email = document.getElementById("login-email").value.trim();
 
-  if (!email || !password) {
-    alert("Please enter email and password.");
-    return;
-  }
+    const password = document.getElementById("login-pass").value;
 
-  try {
+    try {
 
-    const { data, error } =
-      await supabase.auth.signInWithPassword({
+        const { data, error } =
+            await supabase.auth.signInWithPassword({
 
-        email: email,
-        password: password
+                email,
+                password
 
-      });
+            });
 
-    if (error) {
-      throw error;
+        if (error) throw error;
+
+        console.log(data);
+
+        alert("✅ Login Successful!");
+
     }
 
-    alert("✅ Login Successful!");
+    catch (err) {
 
-    console.log(data);
+        console.error(err);
 
-  } catch (err) {
+        alert(err.message);
 
-    console.error(err);
-    alert(err.message);
-
-  }
+    }
 
 }
 
-// =========================
+// ===============================
 // Logout
-// =========================
+// ===============================
+
 async function logout() {
 
-  await supabase.auth.signOut();
+    await supabase.auth.signOut();
 
-  alert("Logged out.");
+    alert("Logged Out");
 
 }
