@@ -1698,6 +1698,15 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+  const supabaseUrl = "https://moznduclvknvvjcaehps.supabase.co";
+const supabaseKey = "sb_publishable_3HWPGbgcy2GuqglpOpAk0A_5niK2XWd";
+
+const supabase = window.supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
+
+console.log("Supabase initialized:", supabase);
 
 <script src="app.js"></script>
 
