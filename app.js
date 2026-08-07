@@ -5,6 +5,14 @@ const supabase = window.supabase.createClient(
   supabaseUrl,
   supabaseKey
 );
+const supabase = window.supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
+
+console.log("window.supabase =", window.supabase);
+console.log("supabase client =", supabase);
+console.log("supabase.auth =", supabase.auth);
 
 async function doRegister() {
   const name = document.getElementById("reg-name").value.trim();
